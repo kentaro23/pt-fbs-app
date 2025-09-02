@@ -1,36 +1,83 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# FBS 自動生成アプリ (理学療法士向け)
 
-## Getting Started
-
-First, run the development server:
+## セットアップ
 
 ```bash
+npm i
+npm run prisma:generate && npm run prisma:migrate
+npm run seed # 任意
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- 開発DB: SQLite (`prisma/dev.db`)
+- UI: shadcn/ui
+- PDF出力: html2canvas + jsPDF
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## ルート
+- `/` ダッシュボード（選手一覧）
+- `/athletes/new` 選手作成
+- `/athletes/[id]` 選手詳細 + Assessment一覧
+- `/assessments/new?athleteId=...` 測定入力
+- `/assessments/[id]/fbs` FBS
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 📱 マルチデバイス対応
 
-## Learn More
+### PWA（Progressive Web App）対応
+このアプリはPWAとして動作し、モバイルデバイスやタブレットでネイティブアプリのように使用できます。
 
-To learn more about Next.js, take a look at the following resources:
+#### iOS（Safari）でのインストール
+1. Safariでアプリにアクセス
+2. 共有ボタン（□↑）をタップ
+3. 「ホーム画面に追加」を選択
+4. 「追加」をタップ
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+#### Android（Chrome）でのインストール
+1. Chromeでアプリにアクセス
+2. メニュー（⋮）をタップ
+3. 「アプリをインストール」を選択
+4. 「インストール」をタップ
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+#### デスクトップ（Chrome/Edge）でのインストール
+1. アドレスバーの右側に表示される「インストール」アイコンをクリック
+2. 「インストール」を選択
 
-## Deploy on Vercel
+### モバイル最適化機能
+- **タッチ操作最適化**: 44px以上のタッチターゲット
+- **レスポンシブデザイン**: 全デバイスサイズに対応
+- **モバイルフォーム**: 入力しやすいUI/UX
+- **横スクロール対応**: 可動域テーブルのモバイル表示
+- **安全領域対応**: ノッチやホームインジケーターに対応
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 対応デバイス
+- 📱 スマートフォン（iOS/Android）
+- 📱 タブレット（iPad/Android）
+- 💻 デスクトップ（Windows/macOS/Linux）
+- 🌐 ブラウザ（Chrome/Safari/Firefox/Edge）
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🚀 デプロイ
+
+### Vercel（推奨）
+```bash
+npm run build
+vercel --prod
+```
+
+### その他のプラットフォーム
+- Netlify
+- AWS Amplify
+- Google Cloud Run
+- Azure Static Web Apps
+
+## 🔧 開発
+
+### アイコン生成
+```bash
+node scripts/generate-icons.js
+```
+
+### データベース
+```bash
+npm run prisma:studio  # Prisma Studio起動
+npm run prisma:migrate # マイグレーション実行
+npm run prisma:generate # クライアント生成
+```

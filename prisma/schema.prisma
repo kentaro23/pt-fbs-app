@@ -1,0 +1,87 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum Position {
+  PITCHER
+  CATCHER
+  INFIELDER
+  OUTFIELDER
+  OTHER
+}
+
+enum ThrowingSide {
+  RIGHT
+  LEFT
+}
+
+enum Batting {
+  RIGHT
+  LEFT
+  SWITCH
+}
+
+enum Movement {
+  SHOULDER_FLEX
+  SHOULDER_ER_90
+  SHOULDER_IR_90
+  HORIZONTAL_ADDUCTION
+  ELBOW_EXTENSION
+  FOREARM_PRONATION
+  FOREARM_SUPINATION
+  HIP_FLEXION
+  HIP_EXTENSION
+  HIP_IR
+  HIP_ER
+}
+
+enum BodySide {
+  RIGHT
+  LEFT
+}
+
+model Athlete {
+  id               String        @id @default(cuid())
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  name             String
+  team             String?
+  position         Position
+  throwingSide     ThrowingSide
+  batting          Batting
+  heightCm         Float
+  weightKg         Float
+  bodyFatPercent   Float
+  assessments      Assessment[]
+}
+
+model Assessment {
+  id               String     @id @default(cuid())
+  athlete          Athlete    @relation(fields: [athleteId], references: [id])
+  athleteId        String
+  date             DateTime   @default(now())
+  fatMassKg        Float
+  leanMassKg       Float
+  leanBodyIndex    Float
+  swingSpeed       Float?
+  notes            String?
+  roms             Rom[]
+}
+
+model Rom {
+  id            String     @id @default(cuid())
+  assessment    Assessment @relation(fields: [assessmentId], references: [id])
+  assessmentId  String
+  movement      Movement
+  side          BodySide
+  valueDeg      Float
+  @@unique([assessmentId, movement, side])
+}
