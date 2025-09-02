@@ -6,11 +6,13 @@ export const fetchCache = 'force-no-store';
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { Button } from "@/components/ui/button";
+import ClientRefGuard from "@/components/ClientRefGuard";
 
 export default async function DashboardPage() {
   const athletes = await prisma.athlete.findMany({ orderBy: { createdAt: "desc" } });
   return (
     <main className="p-6 space-y-4">
+      <ClientRefGuard />
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">選手一覧</h1>
         <Button asChild>
