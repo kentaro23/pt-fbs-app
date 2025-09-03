@@ -5,7 +5,7 @@ export const fetchCache = 'force-no-store';
 
 import ClientRefGuard from "@/components/ClientRefGuard";
 import ClientReferenceMarker from "@/components/ClientReferenceMarker";
-import DashboardPage from "./(dashboard)/page";
+import DashboardPage from "./(dashboard)/DashboardPage";
 
 export default async function Page() {
   return (
