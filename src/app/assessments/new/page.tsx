@@ -1,8 +1,20 @@
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+export const runtime = "nodejs";
+export const fetchCache = "force-no-store";
+
+type SP = Record<string, string | string[] | undefined>;
+
 import { prisma } from "@/lib/db";
 import AssessmentClient from "./AssessmentClient";
 
-export default async function NewAssessmentPage({ searchParams }: { searchParams: { athleteId?: string } }) {
-  const athleteId = searchParams.athleteId;
+export default async function NewAssessmentPage(
+  props: { searchParams?: Promise<SP> }
+) {
+  const sp = (await props.searchParams) ?? {};
+  const raw = sp.athleteId;
+  const athleteId = Array.isArray(raw) ? (raw[0] ?? undefined) : raw;
+
   let athleteName: string | undefined;
   if (athleteId) {
     try {
