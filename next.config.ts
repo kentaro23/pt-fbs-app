@@ -5,6 +5,10 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true,
   },
+  // クライアント参照の生成を強制
+  experimental: {
+    serverComponentsExternalPackages: [],
+  },
   // PWA対応
   headers: async () => {
     return [

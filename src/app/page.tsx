@@ -4,14 +4,14 @@ export const runtime = 'nodejs';
 export const fetchCache = 'force-no-store';
 
 import ClientRefGuard from "@/components/ClientRefGuard";
+import ClientReferenceMarker from "@/components/ClientReferenceMarker";
 import DashboardPage from "./(dashboard)/page";
 
 export default async function Page() {
   return (
     <>
       <ClientRefGuard />
-      {/* ラップして (dashboard)/page をそのまま表示 */}
-      {/* ここはサーバーコンポーネントのまま */}
+      <ClientReferenceMarker />
       <DashboardPage />
     </>
   );
