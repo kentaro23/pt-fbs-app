@@ -6,9 +6,9 @@ const nextConfig: NextConfig = {
     unoptimized: true,
   },
   // クライアント参照の生成を強制
-  experimental: {
-    serverComponentsExternalPackages: [],
-  },
+  serverExternalPackages: [],
+  // 静的エクスポートを無効化（SSRを強制）
+  output: undefined,
   // PWA対応
   headers: async () => {
     return [
