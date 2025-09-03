@@ -9,7 +9,16 @@ import { Button } from "@/components/ui/button";
 import ClientRefGuard from "@/components/ClientRefGuard";
 
 export default async function DashboardPage() {
-  const athletes = await prisma.athlete.findMany({ orderBy: { createdAt: "desc" } });
+  let athletes: Array<{ id: string; name: string; team: string | null; position: string; throwingSide: string; batting: string }>; 
+  try {
+    athletes = await prisma.athlete.findMany({ orderBy: { createdAt: "desc" } });
+  } catch (e) {
+    // フォールバック: DB未設定や接続失敗でもレンダリングを継続
+    console.error("DB error in / (athlete list):", e);
+    athletes = [];
+  }
+  const hasDbError = athletes.length === 0;
+
   return (
     <main className="p-6 space-y-4">
       <ClientRefGuard />
@@ -19,6 +28,11 @@ export default async function DashboardPage() {
           <Link href="/athletes/new">新規作成</Link>
         </Button>
       </div>
+      {hasDbError && (
+        <div className="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded p-2">
+          データベースに接続できませんでした。環境変数 DATABASE_URL を設定してください。
+        </div>
+      )}
       <div className="border rounded">
         <table className="w-full text-sm">
           <thead>
@@ -40,6 +54,11 @@ export default async function DashboardPage() {
                 <td className="px-3 py-2 text-center">{a.batting}</td>
               </tr>
             ))}
+            {athletes.length === 0 && (
+              <tr>
+                <td className="px-3 py-6 text-center text-slate-500" colSpan={5}>データがありません</td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
