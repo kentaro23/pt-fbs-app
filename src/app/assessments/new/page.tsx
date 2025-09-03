@@ -1,35 +1,22 @@
-"use client";
+import { prisma } from "@/lib/db";
+import AssessmentClient from "./AssessmentClient";
 
-import { AssessmentForm, type AssessmentFormValues } from "@/components/forms/AssessmentForm";
-import { createAssessmentAction } from "@/lib/actions";
-import { useState, useEffect } from "react";
-
-export default function NewAssessmentPage({ searchParams }: { searchParams: Promise<{ athleteId?: string }> }) {
-  const [athleteId, setAthleteId] = useState<string | undefined>();
-
-  useEffect(() => {
-    const getSearchParams = async () => {
-      const params = await searchParams;
-      setAthleteId(params.athleteId);
-    };
-    getSearchParams();
-  }, [searchParams]);
-
-  const handleSubmit = async (values: AssessmentFormValues) => {
+export default async function NewAssessmentPage({ searchParams }: { searchParams: { athleteId?: string } }) {
+  const athleteId = searchParams.athleteId;
+  let athleteName: string | undefined;
+  if (athleteId) {
     try {
-      await createAssessmentAction(values, athleteId);
-    } catch (error) {
-      console.error('Error creating assessment:', error);
+      const athlete = await prisma.athlete.findUnique({ where: { id: athleteId }, select: { name: true } });
+      athleteName = athlete?.name ?? undefined;
+    } catch {
+      athleteName = undefined;
     }
-  };
+  }
 
   return (
     <main className="p-6">
       <h1 className="text-2xl font-bold mb-4">測定データ入力</h1>
-      <AssessmentForm
-        defaultValues={{}}
-        onSubmit={handleSubmit}
-      />
+      <AssessmentClient athleteId={athleteId} athleteName={athleteName} />
     </main>
   );
 }

@@ -20,7 +20,8 @@ async function createAthleteAction(values: AthleteFormValues) {
       bodyFatPercent: values.bodyFatPercent,
     },
   });
-  redirect(`/athletes/${athlete.id}`);
+  // 保存後は可動域入力へ
+  redirect(`/assessments/new?athleteId=${athlete.id}`);
 }
 
 export default function NewAthletePage() {

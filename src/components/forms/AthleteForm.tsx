@@ -34,6 +34,7 @@ export function AthleteForm({ onSubmit }: { onSubmit: (v: AthleteFormValues) => 
   const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async (values: AthleteFormValues) => {
+    if (submitting) return; // 二重送信防止
     setSubmitting(true);
     try {
       await onSubmit(values);
@@ -43,7 +44,7 @@ export function AthleteForm({ onSubmit }: { onSubmit: (v: AthleteFormValues) => 
   };
 
   return (
-    <form className="space-y-4" onSubmit={form.handleSubmit(handleSubmit)}>
+    <form className="space-y-4" onSubmit={form.handleSubmit(handleSubmit)} onKeyDown={(e) => { if (e.key === 'Enter') e.preventDefault(); }}>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <Label htmlFor="name">氏名</Label>
@@ -103,7 +104,9 @@ export function AthleteForm({ onSubmit }: { onSubmit: (v: AthleteFormValues) => 
           {form.formState.errors.bodyFatPercent && <p className="text-red-500 text-sm mt-1">{form.formState.errors.bodyFatPercent.message}</p>}
         </div>
       </div>
-      <Button type="submit" disabled={submitting}>{submitting ? "保存中..." : "保存"}</Button>
+      <Button type="submit" disabled={submitting}>
+        {submitting ? "保存中..." : "保存"}
+      </Button>
     </form>
   );
 }
