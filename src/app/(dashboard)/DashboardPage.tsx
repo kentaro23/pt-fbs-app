@@ -6,6 +6,9 @@ export const fetchCache = 'force-no-store';
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import ClientRefGuard from "@/components/ClientRefGuard";
 import DashboardClient from "@/components/DashboardClient";
 import { deleteAthleteAction } from "@/lib/actions";
@@ -47,48 +50,64 @@ export default async function DashboardPage() {
             データベースに接続できませんでした。環境変数 DATABASE_URL を設定してください。
           </div>
         )}
-        <div className="border rounded">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="bg-slate-50">
-                <th className="px-3 py-2 text-left">氏名</th>
-                <th className="px-3 py-2">チーム</th>
-                <th className="px-3 py-2">ポジション</th>
-                <th className="px-3 py-2">投球側</th>
-                <th className="px-3 py-2">打席</th>
-                <th className="px-3 py-2 w-32">操作</th>
-              </tr>
-            </thead>
-            <tbody>
-              {athletes.map(a => (
-                <tr key={a.id} className="hover:bg-slate-50">
-                  <td className="px-3 py-2 text-blue-600 underline"><Link href={`/athletes/${a.id}`}>{a.name}</Link></td>
-                  <td className="px-3 py-2 text-center">{a.team ?? "-"}</td>
-                  <td className="px-3 py-2 text-center">{positionToJp(a.position)}</td>
-                  <td className="px-3 py-2 text-center">{a.throwingSide}</td>
-                  <td className="px-3 py-2 text-center">{a.batting}</td>
-                  <td className="px-3 py-2 text-center">
-                    <form action={async () => {
-                      'use server';
-                      try {
-                        await deleteAthleteAction(a.id);
-                      } catch (e) {
-                        console.error('Delete failed', e);
-                      }
-                    }}>
-                      <Button type="submit" variant="destructive" size="sm">削除</Button>
-                    </form>
-                  </td>
-                </tr>
-              ))}
-              {athletes.length === 0 && (
-                <tr>
-                  <td className="px-3 py-6 text-center text-slate-500" colSpan={6}>データがありません</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between py-3">
+            <CardTitle className="text-base">選手</CardTitle>
+            <div className="text-xs text-muted-foreground">{athletes.length}名</div>
+          </CardHeader>
+          <CardContent className="p-0">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-slate-50/70">
+                  <TableHead className="text-left">氏名</TableHead>
+                  <TableHead className="text-center">チーム</TableHead>
+                  <TableHead className="text-center">ポジション</TableHead>
+                  <TableHead className="text-center">投球側</TableHead>
+                  <TableHead className="text-center">打席</TableHead>
+                  <TableHead className="w-32 text-center">操作</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {athletes.map(a => (
+                  <TableRow key={a.id} className="hover:bg-accent/40">
+                    <TableCell className="text-left">
+                      <Link href={`/athletes/${a.id}`} className="text-primary font-medium hover:underline">
+                        {a.name}
+                      </Link>
+                    </TableCell>
+                    <TableCell className="text-center text-muted-foreground">{a.team ?? "-"}</TableCell>
+                    <TableCell className="text-center">
+                      <Badge variant="secondary">{positionToJp(a.position)}</Badge>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <Badge variant="outline">{a.throwingSide}</Badge>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <Badge variant="outline">{a.batting}</Badge>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <form action={async () => {
+                        'use server';
+                        try {
+                          await deleteAthleteAction(a.id);
+                        } catch (e) {
+                          console.error('Delete failed', e);
+                        }
+                      }}>
+                        <Button type="submit" variant="destructive" size="sm">削除</Button>
+                      </form>
+                    </TableCell>
+                  </TableRow>
+                ))}
+                {athletes.length === 0 && (
+                  <TableRow>
+                    <TableCell className="py-8 text-center text-slate-500" colSpan={6}>データがありません</TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
       </main>
     </DashboardClient>
   );

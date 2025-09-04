@@ -2,6 +2,9 @@ import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { MOVEMENT_LABEL_JP } from "@/lib/constants";
 import type { Movement } from "@/lib/types";
 
@@ -59,63 +62,85 @@ export default async function AthleteDetailPage({ params }: { params: Promise<{ 
         </div>
       </div>
 
-      <section className="space-y-2">
-        <h2 className="font-semibold">基本情報の編集</h2>
-        <form action={updateAthleteAction} className="flex flex-wrap gap-2 items-end">
-          <input type="hidden" name="id" value={athlete.id} />
-          <div>
-            <label className="block text-sm text-muted-foreground">氏名</label>
-            <Input name="name" defaultValue={athlete.name} className="w-64" />
+      <Card>
+        <CardHeader className="py-3">
+          <CardTitle className="text-base">基本情報</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="flex flex-wrap gap-2 items-center text-sm">
+            <div className="text-muted-foreground">チーム</div>
+            <div className="font-medium">{athlete.team ?? '-'}</div>
+            <div className="h-4 w-px bg-border mx-2" />
+            <div className="text-muted-foreground">投球側</div>
+            <Badge variant="outline">{athlete.throwingSide}</Badge>
+            <div className="text-muted-foreground">打席</div>
+            <Badge variant="outline">{athlete.batting}</Badge>
           </div>
-          <div>
-            <label className="block text-sm text-muted-foreground">チーム</label>
-            <Input name="team" defaultValue={athlete.team ?? ""} className="w-64" />
-          </div>
-          <Button type="submit">保存</Button>
-        </form>
-      </section>
 
-      <section className="space-y-2">
-        <h2 className="font-semibold">目標可動域の編集</h2>
-        <form action={updateTargetsAction} className="grid grid-cols-2 md:grid-cols-3 gap-3">
-          <input type="hidden" name="athleteId" value={athlete.id} />
-          {(Object.keys(MOVEMENT_LABEL_JP) as Movement[]).map((m) => (
-            <div key={m} className="space-y-1">
-              <div className="text-sm text-muted-foreground">{MOVEMENT_LABEL_JP[m]}</div>
-              <Input name={`t_${m}`} type="number" step="1" defaultValue={tMap[m] ?? ""} />
+          <form action={updateAthleteAction} className="flex flex-wrap gap-3 items-end">
+            <input type="hidden" name="id" value={athlete.id} />
+            <div>
+              <label className="block text-sm text-muted-foreground">氏名</label>
+              <Input name="name" defaultValue={athlete.name} className="w-64" />
             </div>
-          ))}
-          <div className="col-span-full">
-            <Button type="submit">目標を保存</Button>
-          </div>
-        </form>
-      </section>
+            <div>
+              <label className="block text-sm text-muted-foreground">チーム</label>
+              <Input name="team" defaultValue={athlete.team ?? ""} className="w-64" />
+            </div>
+            <Button type="submit">保存</Button>
+          </form>
+        </CardContent>
+      </Card>
 
-      <section>
-        <h2 className="font-semibold mb-2">Assessments</h2>
-        <div className="border rounded">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="bg-slate-50">
-                <th className="px-3 py-2 text-left">日付</th>
-                <th className="px-3 py-2">LBI</th>
-                <th className="px-3 py-2">スイング</th>
-                <th className="px-3 py-2"></th>
-              </tr>
-            </thead>
-            <tbody>
+      <Card>
+        <CardHeader className="py-3">
+          <CardTitle className="text-base">目標可動域</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form action={updateTargetsAction} className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            <input type="hidden" name="athleteId" value={athlete.id} />
+            {(Object.keys(MOVEMENT_LABEL_JP) as Movement[]).map((m) => (
+              <div key={m} className="space-y-1">
+                <div className="text-sm text-muted-foreground">{MOVEMENT_LABEL_JP[m]}</div>
+                <Input name={`t_${m}`} type="number" step="1" defaultValue={tMap[m] ?? ""} />
+              </div>
+            ))}
+            <div className="col-span-full">
+              <Button type="submit">目標を保存</Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="py-3">
+          <CardTitle className="text-base">Assessments</CardTitle>
+        </CardHeader>
+        <CardContent className="p-0">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-slate-50/70">
+                <TableHead className="text-left">日付</TableHead>
+                <TableHead className="text-center">LBI</TableHead>
+                <TableHead className="text-center">スイング</TableHead>
+                <TableHead></TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {assessments.map(a => (
-                <tr key={a.id} className="hover:bg-slate-50">
-                  <td className="px-3 py-2">{new Date(a.date).toLocaleDateString()}</td>
-                  <td className="px-3 py-2 text-center">{a.leanBodyIndex.toFixed(2)}</td>
-                  <td className="px-3 py-2 text-center">{a.swingSpeed ?? "-"}</td>
-                  <td className="px-3 py-2 text-right text-blue-600 underline"><Link href={`/assessments/${a.id}/fbs`}>FBSを見る</Link></td>
-                </tr>
+                <TableRow key={a.id} className="hover:bg-accent/40">
+                  <TableCell>{new Date(a.date).toLocaleDateString()}</TableCell>
+                  <TableCell className="text-center">{a.leanBodyIndex.toFixed(2)}</TableCell>
+                  <TableCell className="text-center">{a.swingSpeed ?? '-'}</TableCell>
+                  <TableCell className="text-right">
+                    <Link href={`/assessments/${a.id}/fbs`} className="text-primary hover:underline">FBSを見る</Link>
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
     </main>
   );
 }
