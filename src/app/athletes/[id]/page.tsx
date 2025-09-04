@@ -1,6 +1,16 @@
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+
+async function updateAthleteAction(formData: FormData) {
+  "use server";
+  const id = formData.get("id")?.toString() || "";
+  const name = formData.get("name")?.toString() || "";
+  const team = formData.get("team")?.toString() || null;
+  if (!id || !name) return;
+  await prisma.athlete.update({ where: { id }, data: { name, team } });
+}
 
 export default async function AthleteDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -15,8 +25,24 @@ export default async function AthleteDetailPage({ params }: { params: Promise<{ 
           <Link href={`/assessments/new?athleteId=${athlete.id}`}>新規Assessment</Link>
         </Button>
       </div>
+
+      <section className="space-y-2">
+        <h2 className="font-semibold">基本情報の編集</h2>
+        <form action={updateAthleteAction} className="flex flex-wrap gap-2 items-end">
+          <input type="hidden" name="id" value={athlete.id} />
+          <div>
+            <label className="block text-sm text-muted-foreground">氏名</label>
+            <Input name="name" defaultValue={athlete.name} className="w-64" />
+          </div>
+          <div>
+            <label className="block text-sm text-muted-foreground">チーム</label>
+            <Input name="team" defaultValue={athlete.team ?? ""} className="w-64" />
+          </div>
+          <Button type="submit">保存</Button>
+        </form>
+      </section>
+
       <div className="text-sm grid grid-cols-2 md:grid-cols-4 gap-2">
-        <div>チーム: <span className="font-semibold">{athlete.team ?? "-"}</span></div>
         <div>ポジション: <span className="font-semibold">{athlete.position}</span></div>
         <div>投球側: <span className="font-semibold">{athlete.throwingSide}</span></div>
         <div>打席: <span className="font-semibold">{athlete.batting}</span></div>

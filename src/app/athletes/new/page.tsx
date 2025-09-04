@@ -5,6 +5,7 @@ import { prisma } from "@/lib/db";
 async function createAthleteAction(values: AthleteFormValues) {
   "use server";
   const positionMap = { "投手": "PITCHER", "捕手": "CATCHER", "内野手": "INFIELDER", "外野手": "OUTFIELDER", "その他": "OTHER" } as const;
+  const infieldMap = { "一塁手": "FIRST_BASE", "二塁手": "SECOND_BASE", "三塁手": "THIRD_BASE", "遊撃手": "SHORTSTOP" } as const;
   const sideMap = { "右": "RIGHT", "左": "LEFT" } as const;
   const battingMap = { "右": "RIGHT", "左": "LEFT", "両": "SWITCH" } as const;
 
@@ -13,6 +14,7 @@ async function createAthleteAction(values: AthleteFormValues) {
       name: values.name,
       team: values.team ?? null,
       position: positionMap[values.position],
+      infieldPosition: values.infieldPosition ? infieldMap[values.infieldPosition] : null,
       throwingSide: sideMap[values.throwingSide],
       batting: battingMap[values.batting],
       heightCm: values.heightCm,
@@ -20,7 +22,19 @@ async function createAthleteAction(values: AthleteFormValues) {
       bodyFatPercent: values.bodyFatPercent,
     },
   });
-  // 保存後は可動域入力へ
+
+  // 目標ROMを保存
+  if (values.targets) {
+    const entries = Object.entries(values.targets).filter(([, v]) => typeof v === "number") as Array<[string, number]>;
+    if (entries.length) {
+      await prisma.romTarget.createMany({
+        data: entries.map(([movement, targetDeg]) => ({ athleteId: athlete.id, movement: movement as any, targetDeg })),
+        skipDuplicates: true,
+      });
+    }
+  }
+
+  // 保存後は初回Assessment入力へ
   redirect(`/assessments/new?athleteId=${athlete.id}`);
 }
 

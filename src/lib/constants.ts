@@ -12,7 +12,7 @@ export const ROM_MAX: Record<Movement, number> = {
   FOREARM_SUPINATION: 90,
   HIP_FLEXION: 120,
   HIP_EXTENSION: 30,
-  HIP_IR: 45,
+  HIP_IR: 60,
   HIP_ER: 60,
 };
 
