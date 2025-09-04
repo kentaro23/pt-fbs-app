@@ -180,7 +180,7 @@ model Patient {
 
   records     Record[]
   metrics     Metric[]
-  sessions    Session[]
+  sessions    Appointment[]
 }
 
 // Shared or personal templates
