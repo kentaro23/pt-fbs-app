@@ -19,9 +19,11 @@ import type { Movement, ThrowingJp } from "@/lib/types";
 const movements = Object.keys(MOVEMENT_LABEL_JP) as Movement[];
 
 const schema = z.object({
-  name: z.string().min(1, "必須"),
+  // 基本情報のうち、氏名/チーム/ポジションは測定画面では非表示（optionalで型は維持）
+  name: z.string().optional(),
   team: z.string().optional(),
-  position: z.enum(["投手", "捕手", "内野手", "外野手", "その他"]),
+  position: z.enum(["投手", "捕手", "内野手", "外野手", "その他"]).optional(),
+
   throwingSide: z.enum(["右", "左"]),
   batting: z.enum(["右", "左", "両"]),
   heightCm: z.coerce.number().min(120).max(220),
@@ -40,7 +42,6 @@ export function AssessmentForm({ onSubmit, defaultValues }: { onSubmit: (v: Asse
   const form = useForm<AssessmentFormValues>({
     resolver: zodResolver(schema) as unknown as Resolver<AssessmentFormValues>,
     defaultValues: {
-      position: "投手",
       throwingSide: "右",
       batting: "右",
       rom: Object.fromEntries(movements.map(m => [m, { RIGHT: undefined, LEFT: undefined }])) as AssessmentFormValues["rom"],
@@ -67,23 +68,6 @@ export function AssessmentForm({ onSubmit, defaultValues }: { onSubmit: (v: Asse
       <section className="space-y-4">
         <h2 className="text-lg font-semibold">基本情報</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
-            <Label htmlFor="name">氏名</Label>
-            <Input id="name" {...form.register("name")} className="w-full" />
-          </div>
-          <div>
-            <Label htmlFor="team">チーム</Label>
-            <Input id="team" {...form.register("team")} className="w-full" />
-          </div>
-          <div>
-            <Label>ポジション</Label>
-            <Select defaultValue={form.getValues("position")} onValueChange={(v) => form.setValue("position", v as AssessmentFormValues["position"]) }>
-              <SelectTrigger className="w-full"><SelectValue placeholder="選択" /></SelectTrigger>
-              <SelectContent>
-                {["投手","捕手","内野手","外野手","その他"].map(p => <SelectItem key={p} value={p}>{p}</SelectItem>)}
-              </SelectContent>
-            </Select>
-          </div>
           <div>
             <Label>投球側</Label>
             <Select defaultValue={form.getValues("throwingSide")} onValueChange={(v: ThrowingJp) => form.setValue("throwingSide", v)}>

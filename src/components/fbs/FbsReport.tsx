@@ -23,24 +23,24 @@ export function FbsReport({ assessment, athlete, roms }: { assessment: Assessmen
 
   const tri = scoreTriangle({ swingSpeed: assessment.swingSpeed ?? undefined, romMap });
 
-  // 目標値は将来のprops/DB取得を想定。簡易的に空（未設定）
-  const targets: Partial<Record<Movement, number>> = {};
-
   return (
     <div className="max-w-4xl mx-auto p-4 bg-white">
       <div className="space-y-4">
-        <header className="flex justify-between items-start">
-          <div>
-            <h1 className="text-2xl font-bold">FBS Report</h1>
-            <div className="text-sm text-muted-foreground">
-              測定日: {new Date(assessment.date).toLocaleDateString()}
+        <header className="space-y-2">
+          <div className="flex items-start justify-between">
+            <div>
+              <h1 className="text-2xl font-bold">FBS Report</h1>
+              <div className="text-sm text-muted-foreground">測定日: {new Date(assessment.date).toLocaleDateString()}</div>
             </div>
           </div>
-          <div className="text-sm text-right space-y-1">
-            <div><span className="font-semibold">選手名:</span> {athlete.name}</div>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm">
+            <div><span className="font-semibold">氏名:</span> {athlete.name}</div>
             <div><span className="font-semibold">チーム:</span> {athlete.team ?? "-"}</div>
             <div><span className="font-semibold">ポジション:</span> {athlete.position}</div>
             <div><span className="font-semibold">投球側/打席:</span> {athlete.throwingSide}/{athlete.batting}</div>
+            <div><span className="font-semibold">身長:</span> {athlete.heightCm} cm</div>
+            <div><span className="font-semibold">体重:</span> {athlete.weightKg} kg</div>
+            <div><span className="font-semibold">体脂肪率:</span> {athlete.bodyFatPercent}%</div>
           </div>
         </header>
         <Separator className="my-2" />
@@ -75,13 +75,11 @@ export function FbsReport({ assessment, athlete, roms }: { assessment: Assessmen
                 {(Object.keys(MOVEMENT_LABEL_JP) as Movement[]).map((mv) => {
                   const r = romMap[mv]?.RIGHT ?? 0;
                   const l = romMap[mv]?.LEFT ?? 0;
-                  const t = targets[mv];
-                  const below = typeof t === "number" && (r < t || l < t);
                   return (
-                    <tr key={mv} className={below ? "bg-red-50" : undefined}>
-                      <td className="border px-2 py-1 text-left whitespace-nowrap">{MOVEMENT_LABEL_JP[mv]}{typeof t === "number" ? `（目標 ${t}°）` : ""}</td>
-                      <td className={`border px-2 py-1 text-center ${typeof t === "number" && r < t ? "text-red-600 font-semibold" : ""}`}>{r}</td>
-                      <td className={`border px-2 py-1 text-center ${typeof t === "number" && l < t ? "text-red-600 font-semibold" : ""}`}>{l}</td>
+                    <tr key={mv}>
+                      <td className="border px-2 py-1 text-left whitespace-nowrap">{MOVEMENT_LABEL_JP[mv]}</td>
+                      <td className="border px-2 py-1 text-center">{r}</td>
+                      <td className="border px-2 py-1 text-center">{l}</td>
                     </tr>
                   );
                 })}
@@ -89,17 +87,6 @@ export function FbsReport({ assessment, athlete, roms }: { assessment: Assessmen
             </table>
           </div>
         </section>
-
-        {assessment.notes && (
-          <section className="mt-3">
-            <Card>
-              <CardHeader><CardTitle>備考</CardTitle></CardHeader>
-              <CardContent>
-                <div className="whitespace-pre-wrap text-sm">{assessment.notes}</div>
-              </CardContent>
-            </Card>
-          </section>
-        )}
       </div>
     </div>
   );
