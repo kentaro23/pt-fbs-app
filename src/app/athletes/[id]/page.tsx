@@ -49,9 +49,14 @@ export default async function AthleteDetailPage({ params }: { params: Promise<{ 
     <main className="p-6 space-y-4">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">{athlete.name}</h1>
-        <Button asChild>
-          <Link href={`/assessments/new?athleteId=${athlete.id}`}>新規Assessment</Link>
-        </Button>
+        <div className="flex gap-2">
+          <Button asChild>
+            <Link href={`/athletes/${athlete.id}/compare`}>比較</Link>
+          </Button>
+          <Button asChild>
+            <Link href={`/assessments/new?athleteId=${athlete.id}`}>新規Assessment</Link>
+          </Button>
+        </div>
       </div>
 
       <section className="space-y-2">
