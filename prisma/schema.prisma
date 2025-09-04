@@ -89,10 +89,37 @@ model Rom {
 // ====== PT-FBS Core: RBAC / Tenant / Patients / Records / Sessions (Minimal) ======
 
 // Roles and types
-enum Role { OWNER ADMIN THERAPIST ASSISTANT VIEWER ATHLETE }
-enum SessionStatus { SCHEDULED CHECKED_IN COMPLETED CANCELLED NO_SHOW RESCHEDULED }
-enum RecordType { SOAP EVAL PROGRESS }
-enum MetricType { VAS NRS ROM MMT CUSTOM }
+enum Role {
+  OWNER
+  ADMIN
+  THERAPIST
+  ASSISTANT
+  VIEWER
+  ATHLETE
+}
+
+enum SessionStatus {
+  SCHEDULED
+  CHECKED_IN
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+  RESCHEDULED
+}
+
+enum RecordType {
+  SOAP
+  EVAL
+  PROGRESS
+}
+
+enum MetricType {
+  VAS
+  NRS
+  ROM
+  MMT
+  CUSTOM
+}
 
 // Tenant (Clinic/Team)
 model Clinic {
