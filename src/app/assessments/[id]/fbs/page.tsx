@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/db";
 import { FbsReport } from "@/components/fbs/FbsReport";
 import type { Rom, Athlete as ReportAthlete, Assessment as ReportAssessment, ThrowingJp, BattingJp } from "@/lib/types";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export default async function FbsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -35,6 +37,11 @@ export default async function FbsPage({ params }: { params: Promise<{ id: string
   return (
     <main className="p-4">
       <FbsReport athlete={athlete} assessment={assessment} roms={rom as Rom[]} />
+      <div className="mt-6 flex justify-center print:hidden">
+        <Button asChild>
+          <Link href="/">ホームに戻る</Link>
+        </Button>
+      </div>
     </main>
   );
 }
