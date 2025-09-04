@@ -28,6 +28,14 @@ export async function createAssessmentAction(values: AssessmentFormValues, athle
       leanBodyIndex,
       swingSpeed: values.swingSpeed ?? null,
       notes: null,
+      // 球速関連 8項目
+      openHipMark: values.openHipMark as $Enums.Mark3 | null | undefined,
+      bridgeMark: values.bridgeMark as $Enums.Mark3 | null | undefined,
+      forwardBendMark: values.forwardBendMark as $Enums.Mark3 | null | undefined,
+      medicineBallThrow: values.medicineBallThrow ?? null,
+      verticalJumpCm: values.verticalJumpCm ?? null,
+      tripleBroadJumpM: values.tripleBroadJumpM ?? null,
+      squatWeightKg: values.squatWeightKg ?? null,
     },
   });
 

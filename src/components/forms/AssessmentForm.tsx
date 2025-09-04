@@ -34,6 +34,14 @@ const schema = z.object({
     z.enum(movements),
     z.object({ RIGHT: z.coerce.number().min(0).max(180).optional().nullable(), LEFT: z.coerce.number().min(0).max(180).optional().nullable() })
   ),
+  // 球速関連 8項目（3マーク + 4数値、除脂肪は計算で反映）
+  openHipMark: z.enum(["CIRCLE","TRIANGLE","CROSS"]).optional().nullable(),
+  bridgeMark: z.enum(["CIRCLE","TRIANGLE","CROSS"]).optional().nullable(),
+  forwardBendMark: z.enum(["CIRCLE","TRIANGLE","CROSS"]).optional().nullable(),
+  medicineBallThrow: z.coerce.number().optional().nullable(),
+  verticalJumpCm: z.coerce.number().optional().nullable(),
+  tripleBroadJumpM: z.coerce.number().optional().nullable(),
+  squatWeightKg: z.coerce.number().optional().nullable(),
 });
 
 export type AssessmentFormValues = z.infer<typeof schema>;
@@ -169,6 +177,61 @@ export function AssessmentForm({ onSubmit, defaultValues }: { onSubmit: (v: Asse
               ))}
             </TableBody>
           </Table>
+        </div>
+      </section>
+
+      <section>
+        <h2 className="text-lg font-semibold mb-2">球速関連 8項目</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <Label>開脚</Label>
+            <Select onValueChange={(v) => form.setValue("openHipMark", v as any)}>
+              <SelectTrigger className="w-full"><SelectValue placeholder="選択 (○/△/×)" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="CIRCLE">○</SelectItem>
+                <SelectItem value="TRIANGLE">△</SelectItem>
+                <SelectItem value="CROSS">×</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label>ブリッジ</Label>
+            <Select onValueChange={(v) => form.setValue("bridgeMark", v as any)}>
+              <SelectTrigger className="w-full"><SelectValue placeholder="選択 (○/△/×)" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="CIRCLE">○</SelectItem>
+                <SelectItem value="TRIANGLE">△</SelectItem>
+                <SelectItem value="CROSS">×</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label>前屈</Label>
+            <Select onValueChange={(v) => form.setValue("forwardBendMark", v as any)}>
+              <SelectTrigger className="w-full"><SelectValue placeholder="選択 (○/△/×)" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="CIRCLE">○</SelectItem>
+                <SelectItem value="TRIANGLE">△</SelectItem>
+                <SelectItem value="CROSS">×</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label htmlFor="medicineBallThrow">メディシンボール投げ (m)</Label>
+            <Input id="medicineBallThrow" type="number" step="0.1" placeholder="m" className="w-full" {...form.register("medicineBallThrow", { valueAsNumber: true })} />
+          </div>
+          <div>
+            <Label htmlFor="verticalJumpCm">垂直跳び (cm)</Label>
+            <Input id="verticalJumpCm" type="number" step="1" placeholder="cm" className="w-full" {...form.register("verticalJumpCm", { valueAsNumber: true })} />
+          </div>
+          <div>
+            <Label htmlFor="tripleBroadJumpM">3連続立ち幅跳び (m)</Label>
+            <Input id="tripleBroadJumpM" type="number" step="0.1" placeholder="m" className="w-full" {...form.register("tripleBroadJumpM", { valueAsNumber: true })} />
+          </div>
+          <div>
+            <Label htmlFor="squatWeightKg">スクワット重量 (kg)</Label>
+            <Input id="squatWeightKg" type="number" step="1" placeholder="kg" className="w-full" {...form.register("squatWeightKg", { valueAsNumber: true })} />
+          </div>
         </div>
       </section>
 
