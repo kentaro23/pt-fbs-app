@@ -140,6 +140,32 @@ export function FbsReport({ assessment, athlete, roms, targets }: { assessment: 
             </CardContent>
           </Card>
         </section>
+
+        <section className="mt-3">
+          <Card>
+            <CardHeader><CardTitle>スイングスピード関連 指標</CardTitle></CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 gap-2 text-sm">
+                <div className="flex items-center justify-between">
+                  <div className="text-muted-foreground">LBI</div>
+                  <div className="font-semibold">{assessment.leanBodyIndex.toFixed(2)}</div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="text-muted-foreground">垂直跳び</div>
+                  <div className="font-semibold">{typeof assessment.verticalJumpCm === 'number' ? `${assessment.verticalJumpCm} cm` : '-'}</div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="text-muted-foreground">握力(平均)</div>
+                  <div className="font-semibold">{
+                    typeof assessment.gripLeftKg === 'number' || typeof assessment.gripRightKg === 'number'
+                      ? `${(((assessment.gripLeftKg ?? 0) + (assessment.gripRightKg ?? 0)) / (Number(!!assessment.gripLeftKg) + Number(!!assessment.gripRightKg) || 1)).toFixed(1)} kg`
+                      : '-'
+                  }</div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </section>
       </div>
     </div>
   );

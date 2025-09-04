@@ -42,6 +42,8 @@ const schema = z.object({
   verticalJumpCm: z.coerce.number().optional().nullable(),
   tripleBroadJumpM: z.coerce.number().optional().nullable(),
   squatWeightKg: z.coerce.number().optional().nullable(),
+  gripRightKg: z.coerce.number().optional().nullable(),
+  gripLeftKg: z.coerce.number().optional().nullable(),
 });
 
 export type AssessmentFormValues = z.infer<typeof schema>;
@@ -231,6 +233,14 @@ export function AssessmentForm({ onSubmit, defaultValues }: { onSubmit: (v: Asse
           <div>
             <Label htmlFor="squatWeightKg">スクワット重量 (kg)</Label>
             <Input id="squatWeightKg" type="number" step="1" placeholder="kg" className="w-full" {...form.register("squatWeightKg", { valueAsNumber: true })} />
+          </div>
+          <div>
+            <Label htmlFor="gripRightKg">握力 右 (kg)</Label>
+            <Input id="gripRightKg" type="number" step="0.1" placeholder="kg" className="w-full" {...form.register("gripRightKg", { valueAsNumber: true })} />
+          </div>
+          <div>
+            <Label htmlFor="gripLeftKg">握力 左 (kg)</Label>
+            <Input id="gripLeftKg" type="number" step="0.1" placeholder="kg" className="w-full" {...form.register("gripLeftKg", { valueAsNumber: true })} />
           </div>
         </div>
       </section>

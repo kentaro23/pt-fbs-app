@@ -36,6 +36,8 @@ export async function createAssessmentAction(values: AssessmentFormValues, athle
       verticalJumpCm: values.verticalJumpCm ?? null,
       tripleBroadJumpM: values.tripleBroadJumpM ?? null,
       squatWeightKg: values.squatWeightKg ?? null,
+      gripRightKg: values.gripRightKg ?? null,
+      gripLeftKg: values.gripLeftKg ?? null,
     },
   });
 
