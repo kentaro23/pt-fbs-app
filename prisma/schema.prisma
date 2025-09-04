@@ -85,6 +85,8 @@ model Assessment {
   verticalJumpCm    Float?
   tripleBroadJumpM  Float?
   squatWeightKg     Float?
+  gripRightKg       Float?
+  gripLeftKg        Float?
 }
 
 model Rom {
