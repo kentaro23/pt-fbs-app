@@ -8,51 +8,15 @@ import type { Movement } from "@/lib/types";
 import type { Prisma, $Enums } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
-type Position = "PITCHER" | "CATCHER" | "INFIELDER" | "OUTFIELDER" | "OTHER";
-type Side = "RIGHT" | "LEFT";
-type Batting = "RIGHT" | "LEFT" | "SWITCH";
-
-function mapPosition(p: string): Position {
-  const positionMap: Record<string, Position> = {
-    "投手": "PITCHER",
-    "捕手": "CATCHER", 
-    "内野手": "INFIELDER",
-    "外野手": "OUTFIELDER",
-    "その他": "OTHER"
-  };
-  return positionMap[p] || "OTHER";
-}
-
-function mapSide(s: string): Side { 
-  return s === "右" ? "RIGHT" : "LEFT"; 
-}
-
-function mapBat(b: string): Batting { 
-  const battingMap: Record<string, Batting> = {
-    "右": "RIGHT",
-    "左": "LEFT", 
-    "両": "SWITCH"
-  };
-  return battingMap[b] || "RIGHT";
-}
-
 export async function createAssessmentAction(values: AssessmentFormValues, athleteId?: string) {
   const { fatMassKg, leanMassKg, leanBodyIndex } = computeComposition(values.heightCm, values.weightKg, values.bodyFatPercent);
 
-  let athlete = athleteId ? await prisma.athlete.findUnique({ where: { id: athleteId } }) : null;
+  if (!athleteId) {
+    throw new Error("athleteId is required to create assessment");
+  }
+  const athlete = await prisma.athlete.findUnique({ where: { id: athleteId } });
   if (!athlete) {
-    athlete = await prisma.athlete.create({
-      data: {
-        name: values.name,
-        team: values.team ?? null,
-        position: mapPosition(values.position),
-        throwingSide: mapSide(values.throwingSide),
-        batting: mapBat(values.batting),
-        heightCm: values.heightCm,
-        weightKg: values.weightKg,
-        bodyFatPercent: values.bodyFatPercent,
-      },
-    });
+    throw new Error("athlete not found");
   }
 
   const assessment = await prisma.assessment.create({
