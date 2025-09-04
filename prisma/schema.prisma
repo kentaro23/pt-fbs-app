@@ -133,7 +133,7 @@ model Clinic {
   templates   EvaluationTemplate[]
   records     Record[]
   metrics     Metric[]
-  sessions    Session[]
+  sessions    Appointment[]
   reminders   Reminder[]
 }
 
@@ -144,7 +144,7 @@ model User {
   name         String?
   memberships  Membership[]
   records      Record[]
-  assigned     Session[]     @relation("SessionAssignee")
+  assigned     Appointment[]     @relation("AppointmentAssignee")
   ownedTemplates EvaluationTemplate[] @relation("UserOwnedTemplates")
 }
 
@@ -229,7 +229,7 @@ model Metric {
 }
 
 // Session lifecycle
-model Session {
+model Appointment {
   id                String        @id @default(cuid())
   clinic            Clinic        @relation(fields: [clinicId], references: [id])
   clinicId          String
@@ -241,7 +241,7 @@ model Session {
   completedAt       DateTime?
   cancelledAt       DateTime?
   rescheduledReason String?
-  assignee          User?         @relation("SessionAssignee", fields: [assigneeId], references: [id])
+  assignee          User?         @relation("AppointmentAssignee", fields: [assigneeId], references: [id])
   assigneeId        String?
   notes             String?
   createdAt         DateTime      @default(now())
@@ -255,8 +255,8 @@ model Reminder {
   id          String   @id @default(cuid())
   clinic      Clinic   @relation(fields: [clinicId], references: [id])
   clinicId    String
-  session     Session  @relation(fields: [sessionId], references: [id])
-  sessionId   String
+  appointment Appointment  @relation(fields: [appointmentId], references: [id])
+  appointmentId   String
   channel     String
   scheduledFor DateTime
   sentAt      DateTime?
