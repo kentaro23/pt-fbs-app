@@ -145,6 +145,7 @@ model User {
   memberships  Membership[]
   records      Record[]
   assigned     Session[]     @relation("SessionAssignee")
+  ownedTemplates EvaluationTemplate[] @relation("UserOwnedTemplates")
 }
 
 // User x Clinic with role
@@ -187,7 +188,7 @@ model EvaluationTemplate {
   id        String      @id @default(cuid())
   clinic    Clinic      @relation(fields: [clinicId], references: [id])
   clinicId  String
-  owner     User?       @relation(fields: [ownerId], references: [id])
+  owner     User?       @relation("UserOwnedTemplates", fields: [ownerId], references: [id])
   ownerId   String?
   name      String
   type      RecordType
