@@ -27,15 +27,22 @@ function positionToJp(p: string): string {
   return map[p] ?? p;
 }
 
-export default async function DashboardPage(props?: { searchParams?: Record<string, string | undefined> }) {
-  const sp = props?.searchParams ?? {};
-  const q = (sp.q ?? "").trim();
-  const posJp = sp.pos ?? "";
-  const sideJp = sp.side ?? "";
-  const batJp = sp.bat ?? "";
-  const sort = sp.sort ?? "createdAt_desc";
-  const page = Math.max(1, Number.parseInt(sp.page ?? "1", 10) || 1);
-  const limit = Math.min(50, Math.max(5, Number.parseInt(sp.limit ?? "10", 10) || 10));
+type SP = Record<string, string | string[] | undefined>;
+
+export default async function DashboardPage(props?: { searchParams?: SP }) {
+  const sp: SP = props?.searchParams ?? {};
+  const pick = (k: string): string => {
+    const v = sp[k];
+    return Array.isArray(v) ? (v[0] ?? "") : (v ?? "");
+  };
+
+  const q = pick("q").trim();
+  const posJp = pick("pos");
+  const sideJp = pick("side");
+  const batJp = pick("bat");
+  const sort = pick("sort") || "createdAt_desc";
+  const page = Math.max(1, Number.parseInt(pick("page") || "1", 10) || 1);
+  const limit = Math.min(50, Math.max(5, Number.parseInt(pick("limit") || "10", 10) || 10));
 
   const positionMap: Record<string, $Enums.Position> = {
     "投手": "PITCHER",
@@ -87,10 +94,11 @@ export default async function DashboardPage(props?: { searchParams?: Record<stri
   const totalPages = Math.max(1, Math.ceil(total / limit));
 
   // クエリ文字列生成（undefinedや空文字は除外）
-  const buildQS = (base: Record<string, string | undefined>, overrides: Record<string, string>) => {
+  const buildQS = (base: SP, overrides: Record<string, string>) => {
     const usp = new URLSearchParams();
     Object.entries(base).forEach(([k, v]) => {
-      if (typeof v === "string" && v.length) usp.set(k, v);
+      const val = Array.isArray(v) ? (v[0] ?? "") : (v ?? "");
+      if (val.length) usp.set(k, val);
     });
     Object.entries(overrides).forEach(([k, v]) => usp.set(k, v));
     return usp.toString();
