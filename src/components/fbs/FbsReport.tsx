@@ -8,7 +8,7 @@ import { MOVEMENT_LABEL_JP } from "@/lib/constants";
 import { scoreTriangle, normalizeRom } from "@/lib/calc";
 import type { Assessment, Athlete, Rom, Movement } from "@/lib/types";
 
-export function FbsReport({ assessment, athlete, roms }: { assessment: Assessment; athlete: Athlete; roms: Rom[] }) {
+export function FbsReport({ assessment, athlete, roms, targets }: { assessment: Assessment; athlete: Athlete; roms: Rom[]; targets?: Partial<Record<Movement, number>> }) {
   const romMap = roms.reduce((acc, r) => {
     if (!acc[r.movement]) acc[r.movement] = {} as Record<string, number>;
     acc[r.movement][r.side] = r.valueDeg;
@@ -69,17 +69,27 @@ export function FbsReport({ assessment, athlete, roms }: { assessment: Assessmen
                   <th className="border px-2 py-1 text-left">種目</th>
                   <th className="border px-2 py-1">右(°)</th>
                   <th className="border px-2 py-1">左(°)</th>
+                  <th className="border px-2 py-1">目標(°)</th>
+                  <th className="border px-2 py-1">差(右)</th>
+                  <th className="border px-2 py-1">差(左)</th>
                 </tr>
               </thead>
               <tbody>
                 {(Object.keys(MOVEMENT_LABEL_JP) as Movement[]).map((mv) => {
                   const r = romMap[mv]?.RIGHT ?? 0;
                   const l = romMap[mv]?.LEFT ?? 0;
+                  const t = targets?.[mv];
+                  const dr = typeof t === "number" ? r - t : undefined;
+                  const dl = typeof t === "number" ? l - t : undefined;
+                  const below = typeof t === "number" && (r < t || l < t);
                   return (
-                    <tr key={mv}>
+                    <tr key={mv} className={below ? "bg-red-50" : undefined}>
                       <td className="border px-2 py-1 text-left whitespace-nowrap">{MOVEMENT_LABEL_JP[mv]}</td>
-                      <td className="border px-2 py-1 text-center">{r}</td>
-                      <td className="border px-2 py-1 text-center">{l}</td>
+                      <td className={`border px-2 py-1 text-center ${typeof t === "number" && r < t ? "text-red-600 font-semibold" : ""}`}>{r}</td>
+                      <td className={`border px-2 py-1 text-center ${typeof t === "number" && l < t ? "text-red-600 font-semibold" : ""}`}>{l}</td>
+                      <td className="border px-2 py-1 text-center">{typeof t === "number" ? t : "-"}</td>
+                      <td className={`border px-2 py-1 text-center ${typeof dr === "number" && dr < 0 ? "text-red-600" : ""}`}>{typeof dr === "number" ? dr.toFixed(1) : "-"}</td>
+                      <td className={`border px-2 py-1 text-center ${typeof dl === "number" && dl < 0 ? "text-red-600" : ""}`}>{typeof dl === "number" ? dl.toFixed(1) : "-"}</td>
                     </tr>
                   );
                 })}

@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/db";
 import { FbsReport } from "@/components/fbs/FbsReport";
-import type { Rom, Athlete as ReportAthlete, Assessment as ReportAssessment, ThrowingJp, BattingJp } from "@/lib/types";
+import type { Rom, Athlete as ReportAthlete, Assessment as ReportAssessment, ThrowingJp, BattingJp, Movement } from "@/lib/types";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
@@ -20,6 +20,8 @@ export default async function FbsPage({ params }: { params: Promise<{ id: string
   const a = await prisma.assessment.findUnique({ where: { id }, include: { athlete: true } });
   if (!a) return <div className="p-6">Not found</div>;
   const rom = await prisma.rom.findMany({ where: { assessmentId: a.id } });
+  const targetRows = await prisma.romTarget.findMany({ where: { athleteId: a.athlete.id } });
+  const targets = Object.fromEntries(targetRows.map(t => [t.movement as unknown as Movement, t.targetDeg])) as Partial<Record<Movement, number>>;
 
   const throwingSide: ThrowingJp = a.athlete.throwingSide === "RIGHT" ? "右" : "左";
   const batting: BattingJp = a.athlete.batting === "SWITCH" ? "両" : a.athlete.batting === "RIGHT" ? "右" : "左";
@@ -47,7 +49,7 @@ export default async function FbsPage({ params }: { params: Promise<{ id: string
 
   return (
     <main className="p-4">
-      <FbsReport athlete={athlete} assessment={assessment} roms={rom as Rom[]} />
+      <FbsReport athlete={athlete} assessment={assessment} roms={rom as Rom[]} targets={targets} />
       <div className="mt-6 flex justify-center print:hidden">
         <Button asChild>
           <Link href="/">ホームに戻る</Link>
