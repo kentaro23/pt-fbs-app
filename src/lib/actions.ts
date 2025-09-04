@@ -48,20 +48,29 @@ export async function createAssessmentAction(values: AssessmentFormValues, athle
   redirect(`/assessments/${assessment.id}/fbs`);
 }
 
-// 選手と関連データ（Assessment/Rom）を削除
+// 選手と関連データ（Assessment/Rom/RomTarget）を削除
 export async function deleteAthleteAction(athleteId: string) {
   if (!athleteId) return;
-  await prisma.$transaction(async (tx) => {
-    const assessments = await tx.assessment.findMany({ where: { athleteId }, select: { id: true } });
-    const assessmentIds = assessments.map((a) => a.id);
-    if (assessmentIds.length > 0) {
-      await tx.rom.deleteMany({ where: { assessmentId: { in: assessmentIds } } });
-      await tx.assessment.deleteMany({ where: { id: { in: assessmentIds } } });
-    } else {
-      await tx.assessment.deleteMany({ where: { athleteId } });
-    }
-    await tx.athlete.delete({ where: { id: athleteId } });
-  });
-  // 一覧を更新
-  revalidatePath("/");
+  try {
+    await prisma.$transaction(async (tx) => {
+      // 目標ROM
+      await tx.romTarget.deleteMany({ where: { athleteId } });
+      // Assessment と Rom
+      const assessments = await tx.assessment.findMany({ where: { athleteId }, select: { id: true } });
+      const assessmentIds = assessments.map((a) => a.id);
+      if (assessmentIds.length > 0) {
+        await tx.rom.deleteMany({ where: { assessmentId: { in: assessmentIds } } });
+        await tx.assessment.deleteMany({ where: { id: { in: assessmentIds } } });
+      } else {
+        await tx.assessment.deleteMany({ where: { athleteId } });
+      }
+      // Athlete
+      await tx.athlete.delete({ where: { id: athleteId } });
+    });
+  } catch (e) {
+    console.error("deleteAthleteAction failed:", e);
+    throw e;
+  } finally {
+    revalidatePath("/");
+  }
 }

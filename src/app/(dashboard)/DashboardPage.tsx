@@ -10,8 +10,19 @@ import ClientRefGuard from "@/components/ClientRefGuard";
 import DashboardClient from "@/components/DashboardClient";
 import { deleteAthleteAction } from "@/lib/actions";
 
+function positionToJp(p: string): string {
+  const map: Record<string,string> = {
+    PITCHER: "投手",
+    CATCHER: "捕手",
+    INFIELDER: "内野手",
+    OUTFIELDER: "外野手",
+    OTHER: "その他",
+  };
+  return map[p] ?? p;
+}
+
 export default async function DashboardPage() {
-  let athletes: Array<{ id: string; name: string; team: string | null; position: string; throwingSide: string; batting: string }>; 
+  let athletes: Array<{ id: string; name: string; team: string | null; position: string; throwingSide: string; batting: string }>;
   try {
     athletes = await prisma.athlete.findMany({ orderBy: { createdAt: "desc" } });
   } catch (e) {
@@ -53,15 +64,17 @@ export default async function DashboardPage() {
                 <tr key={a.id} className="hover:bg-slate-50">
                   <td className="px-3 py-2 text-blue-600 underline"><Link href={`/athletes/${a.id}`}>{a.name}</Link></td>
                   <td className="px-3 py-2 text-center">{a.team ?? "-"}</td>
-                  <td className="px-3 py-2 text-center">{a.position}</td>
+                  <td className="px-3 py-2 text-center">{positionToJp(a.position)}</td>
                   <td className="px-3 py-2 text-center">{a.throwingSide}</td>
                   <td className="px-3 py-2 text-center">{a.batting}</td>
                   <td className="px-3 py-2 text-center">
                     <form action={async () => {
                       'use server';
-                      // 二重送信・誤操作防止のため確認
-                      // サーバーアクションでは confirm は使えないので、ここでは即削除。
-                      await deleteAthleteAction(a.id);
+                      try {
+                        await deleteAthleteAction(a.id);
+                      } catch (e) {
+                        console.error('Delete failed', e);
+                      }
                     }}>
                       <Button type="submit" variant="destructive" size="sm">削除</Button>
                     </form>
