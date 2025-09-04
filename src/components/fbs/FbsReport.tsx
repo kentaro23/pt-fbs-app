@@ -81,15 +81,15 @@ export function FbsReport({ assessment, athlete, roms, targets }: { assessment: 
 
         <section className="mt-3">
           <div className="overflow-x-auto">
-            <table className="w-full text-sm border">
+            <table className="w-full text-sm border border-black">
               <thead>
                 <tr className="bg-slate-50">
-                  <th className="border px-2 py-1 text-left">種目</th>
-                  <th className="border px-2 py-1">右(°)</th>
-                  <th className="border px-2 py-1">左(°)</th>
-                  <th className="border px-2 py-1">目標(°)</th>
-                  <th className="border px-2 py-1">差(右)</th>
-                  <th className="border px-2 py-1">差(左)</th>
+                  <th className="border border-black px-2 py-1 text-left">種目</th>
+                  <th className="border border-black px-2 py-1">右(°)</th>
+                  <th className="border border-black px-2 py-1">左(°)</th>
+                  <th className="border border-black px-2 py-1">目標(°)</th>
+                  <th className="border border-black px-2 py-1">差(右)</th>
+                  <th className="border border-black px-2 py-1">差(左)</th>
                 </tr>
               </thead>
               <tbody>
@@ -102,12 +102,12 @@ export function FbsReport({ assessment, athlete, roms, targets }: { assessment: 
                   const below = typeof t === "number" && (r < t || l < t);
                   return (
                     <tr key={mv} className={below ? "bg-red-50" : undefined}>
-                      <td className="border px-2 py-1 text-left whitespace-nowrap">{MOVEMENT_LABEL_JP[mv]}</td>
-                      <td className={`border px-2 py-1 text-center ${typeof t === "number" && r < t ? "text-red-600 font-semibold" : ""}`}>{r}</td>
-                      <td className={`border px-2 py-1 text-center ${typeof t === "number" && l < t ? "text-red-600 font-semibold" : ""}`}>{l}</td>
-                      <td className="border px-2 py-1 text-center">{typeof t === "number" ? t : "-"}</td>
-                      <td className={`border px-2 py-1 text-center ${typeof dr === "number" && dr < 0 ? "text-red-600" : ""}`}>{typeof dr === "number" ? dr.toFixed(1) : "-"}</td>
-                      <td className={`border px-2 py-1 text-center ${typeof dl === "number" && dl < 0 ? "text-red-600" : ""}`}>{typeof dl === "number" ? dl.toFixed(1) : "-"}</td>
+                      <td className="border border-black px-2 py-1 text-left whitespace-nowrap">{MOVEMENT_LABEL_JP[mv]}</td>
+                      <td className={`border border-black px-2 py-1 text-center ${typeof t === "number" && r < t ? "text-red-600 font-semibold" : ""}`}>{r}</td>
+                      <td className={`border border-black px-2 py-1 text-center ${typeof t === "number" && l < t ? "text-red-600 font-semibold" : ""}`}>{l}</td>
+                      <td className="border border-black px-2 py-1 text-center">{typeof t === "number" ? t : "-"}</td>
+                      <td className={`border border-black px-2 py-1 text-center ${typeof dr === "number" && dr < 0 ? "text-red-600" : ""}`}>{typeof dr === "number" ? dr.toFixed(1) : "-"}</td>
+                      <td className={`border border-black px-2 py-1 text-center ${typeof dl === "number" && dl < 0 ? "text-red-600" : ""}`}>{typeof dl === "number" ? dl.toFixed(1) : "-"}</td>
                     </tr>
                   );
                 })}
