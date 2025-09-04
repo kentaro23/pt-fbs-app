@@ -9,9 +9,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import ClientRefGuard from "@/components/ClientRefGuard";
 import DashboardClient from "@/components/DashboardClient";
 import { deleteAthleteAction } from "@/lib/actions";
+import type { $Enums, Prisma } from "@prisma/client";
+import { cache } from "react";
 
 function positionToJp(p: string): string {
   const map: Record<string,string> = {
@@ -24,27 +28,139 @@ function positionToJp(p: string): string {
   return map[p] ?? p;
 }
 
-export default async function DashboardPage() {
-  let athletes: Array<{ id: string; name: string; team: string | null; position: string; throwingSide: string; batting: string }>;
+export default async function DashboardPage(props?: { searchParams?: Record<string, string | undefined> }) {
+  const sp = props?.searchParams ?? {};
+  const q = (sp.q ?? "").trim();
+  const posJp = sp.pos ?? "";
+  const sideJp = sp.side ?? "";
+  const batJp = sp.bat ?? "";
+  const sort = sp.sort ?? "createdAt_desc";
+  const page = Math.max(1, Number.parseInt(sp.page ?? "1", 10) || 1);
+  const limit = Math.min(50, Math.max(5, Number.parseInt(sp.limit ?? "10", 10) || 10));
+
+  const positionMap: Record<string, $Enums.Position> = {
+    "投手": "PITCHER",
+    "捕手": "CATCHER",
+    "内野手": "INFIELDER",
+    "外野手": "OUTFIELDER",
+    "その他": "OTHER",
+  };
+  const sideMap: Record<string, $Enums.ThrowingSide> = { "右": "RIGHT", "左": "LEFT" };
+  const batMap: Record<string, $Enums.Batting> = { "右": "RIGHT", "左": "LEFT", "両": "SWITCH" };
+
+  const where: Prisma.AthleteWhereInput = {
+    AND: [
+      q
+        ? {
+            OR: [
+              { name: { contains: q } },
+              { team: { contains: q } },
+            ],
+          }
+        : {},
+      posJp ? { position: positionMap[posJp] } : {},
+      sideJp ? { throwingSide: sideMap[sideJp] } : {},
+      batJp ? { batting: batMap[batJp] } : {},
+    ],
+  };
+
+  const orderBy: Prisma.AthleteOrderByWithRelationInput =
+    sort === "name_asc"
+      ? { name: "asc" }
+      : sort === "name_desc"
+      ? { name: "desc" }
+      : sort === "createdAt_asc"
+      ? { createdAt: "asc" }
+      : { createdAt: "desc" };
+
+  let athletes: Array<{ id: string; name: string; team: string | null; position: string; throwingSide: string; batting: string }> = [];
+  let total = 0;
+  let hasDbError = false;
   try {
-    athletes = await prisma.athlete.findMany({ orderBy: { createdAt: "desc" } });
+    [total, athletes] = await prisma.$transaction([
+      prisma.athlete.count({ where }),
+      prisma.athlete.findMany({ where, orderBy, skip: (page - 1) * limit, take: limit }),
+    ]);
   } catch (e) {
-    // フォールバック: DB未設定や接続失敗でもレンダリングを継続
     console.error("DB error in / (athlete list):", e);
-    athletes = [];
+    hasDbError = true;
   }
-  const hasDbError = athletes.length === 0;
+  const totalPages = Math.max(1, Math.ceil(total / limit));
 
   return (
     <DashboardClient>
       <main className="p-6 space-y-4">
         <ClientRefGuard />
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-3">
           <h1 className="text-2xl font-bold">選手一覧</h1>
           <Button asChild>
             <Link href="/athletes/new">新規作成</Link>
           </Button>
         </div>
+        <Card>
+          <CardHeader className="py-3">
+            <CardTitle className="text-base">検索/フィルタ</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form className="grid grid-cols-1 md:grid-cols-5 gap-3" method="GET">
+              <Input name="q" placeholder="氏名 / チーム" defaultValue={q} className="md:col-span-2" />
+              <Select name="pos" defaultValue={posJp || undefined}>
+                <SelectTrigger><SelectValue placeholder="ポジション" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">すべて</SelectItem>
+                  <SelectItem value="投手">投手</SelectItem>
+                  <SelectItem value="捕手">捕手</SelectItem>
+                  <SelectItem value="内野手">内野手</SelectItem>
+                  <SelectItem value="外野手">外野手</SelectItem>
+                  <SelectItem value="その他">その他</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select name="side" defaultValue={sideJp || undefined}>
+                <SelectTrigger><SelectValue placeholder="投球側" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">すべて</SelectItem>
+                  <SelectItem value="右">右</SelectItem>
+                  <SelectItem value="左">左</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select name="bat" defaultValue={batJp || undefined}>
+                <SelectTrigger><SelectValue placeholder="打席" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">すべて</SelectItem>
+                  <SelectItem value="右">右</SelectItem>
+                  <SelectItem value="左">左</SelectItem>
+                  <SelectItem value="両">両</SelectItem>
+                </SelectContent>
+              </Select>
+              <div className="grid grid-cols-2 gap-2">
+                <Select name="sort" defaultValue={sort}>
+                  <SelectTrigger><SelectValue placeholder="並べ替え" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="createdAt_desc">新しい順</SelectItem>
+                    <SelectItem value="createdAt_asc">古い順</SelectItem>
+                    <SelectItem value="name_asc">氏名昇順</SelectItem>
+                    <SelectItem value="name_desc">氏名降順</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Select name="limit" defaultValue={String(limit)}>
+                  <SelectTrigger><SelectValue placeholder="件数/頁" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="10">10件</SelectItem>
+                    <SelectItem value="20">20件</SelectItem>
+                    <SelectItem value="50">50件</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <input type="hidden" name="page" value="1" />
+              <div className="md:col-span-5 flex gap-2">
+                <Button type="submit">適用</Button>
+                <Button type="reset" asChild variant="outline">
+                  <Link href="/">リセット</Link>
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
         {hasDbError && (
           <div className="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded p-2">
             データベースに接続できませんでした。環境変数 DATABASE_URL を設定してください。
@@ -53,7 +169,7 @@ export default async function DashboardPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between py-3">
             <CardTitle className="text-base">選手</CardTitle>
-            <div className="text-xs text-muted-foreground">{athletes.length}名</div>
+            <div className="text-xs text-muted-foreground">{hasDbError ? 0 : total}名</div>
           </CardHeader>
           <CardContent className="p-0">
             <Table>
@@ -99,7 +215,7 @@ export default async function DashboardPage() {
                     </TableCell>
                   </TableRow>
                 ))}
-                {athletes.length === 0 && (
+                {(!athletes || athletes.length === 0) && (
                   <TableRow>
                     <TableCell className="py-8 text-center text-slate-500" colSpan={6}>データがありません</TableCell>
                   </TableRow>
@@ -108,6 +224,25 @@ export default async function DashboardPage() {
             </Table>
           </CardContent>
         </Card>
+
+        {/* Pagination */}
+        {!hasDbError && totalPages > 1 && (
+          <div className="flex items-center justify-between text-sm">
+            <div className="text-muted-foreground">
+              {(total === 0)
+                ? "0件"
+                : `${(page - 1) * limit + 1}–${Math.min(page * limit, total)} / ${total}件`}
+            </div>
+            <div className="flex gap-2">
+              <Button asChild variant="outline" disabled={page <= 1}>
+                <Link href={`/?${new URLSearchParams({ ...sp, page: String(page - 1) } as Record<string,string>).toString()}`}>前へ</Link>
+              </Button>
+              <Button asChild variant="outline" disabled={page >= totalPages}>
+                <Link href={`/?${new URLSearchParams({ ...sp, page: String(page + 1) } as Record<string,string>).toString()}`}>次へ</Link>
+              </Button>
+            </div>
+          </div>
+        )}
       </main>
     </DashboardClient>
   );
