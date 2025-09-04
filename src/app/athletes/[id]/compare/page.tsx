@@ -21,16 +21,23 @@ export default async function ComparePage({ params, searchParams }: { params: Pr
   const selA = assessments.find(x => x.id === aId) ?? assessments[0];
   const selB = assessments.find(x => x.id === bId) ?? assessments[1];
 
-  const romA = selA ? await prisma.rom.findMany({ where: { assessmentId: selA.id } }) : [];
-  const romB = selB ? await prisma.rom.findMany({ where: { assessmentId: selB.id } }) : [];
+  const romA = selA ? await prisma.rom.findMany({ where: { assessmentId: selA.id } }) : [] as const;
+  const romB = selB ? await prisma.rom.findMany({ where: { assessmentId: selB.id } }) : [] as const;
 
-  const mapRows = (rows: { movement: Movement; side: "RIGHT"|"LEFT"; valueDeg: number }[]) => {
-    const acc: Record<Movement, { RIGHT?: number; LEFT?: number }> = {} as any;
-    rows.forEach(r => { (acc[r.movement] ||= {} as any)[r.side] = r.valueDeg; });
+  type SideMap = { RIGHT?: number; LEFT?: number };
+  type RomMap = Record<Movement, SideMap>;
+
+  const mapRows = (rows: { movement: Movement; side: "RIGHT"|"LEFT"; valueDeg: number }[]): RomMap => {
+    const acc: RomMap = {} as RomMap;
+    rows.forEach(r => {
+      const cur = acc[r.movement] ?? {};
+      cur[r.side] = r.valueDeg;
+      acc[r.movement] = cur;
+    });
     return acc;
   };
-  const aMap = mapRows(romA as any);
-  const bMap = mapRows(romB as any);
+  const aMap: RomMap = mapRows(romA as unknown as { movement: Movement; side: "RIGHT"|"LEFT"; valueDeg: number }[]);
+  const bMap: RomMap = mapRows(romB as unknown as { movement: Movement; side: "RIGHT"|"LEFT"; valueDeg: number }[]);
 
   return (
     <main className="p-6 space-y-4">
