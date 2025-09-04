@@ -37,12 +37,17 @@ export default async function DashboardPage(props?: { searchParams?: SP }) {
   };
 
   const q = pick("q").trim();
-  const posJp = pick("pos");
-  const sideJp = pick("side");
-  const batJp = pick("bat");
+  const posSp = pick("pos");
+  const sideSp = pick("side");
+  const batSp = pick("bat");
   const sort = pick("sort") || "createdAt_desc";
   const page = Math.max(1, Number.parseInt(pick("page") || "1", 10) || 1);
   const limit = Math.min(50, Math.max(5, Number.parseInt(pick("limit") || "10", 10) || 10));
+
+  const normalizeAll = (v: string) => (v === "__all" ? "" : v);
+  const posJp = normalizeAll(posSp);
+  const sideJp = normalizeAll(sideSp);
+  const batJp = normalizeAll(batSp);
 
   const positionMap: Record<string, $Enums.Position> = {
     "投手": "PITCHER",
@@ -93,12 +98,12 @@ export default async function DashboardPage(props?: { searchParams?: SP }) {
   }
   const totalPages = Math.max(1, Math.ceil(total / limit));
 
-  // クエリ文字列生成（undefinedや空文字は除外）
+  // クエリ文字列生成（undefinedや空文字/__all は除外）
   const buildQS = (base: SP, overrides: Record<string, string>) => {
     const usp = new URLSearchParams();
     Object.entries(base).forEach(([k, v]) => {
       const val = Array.isArray(v) ? (v[0] ?? "") : (v ?? "");
-      if (val.length) usp.set(k, val);
+      if (val.length && val !== "__all") usp.set(k, val);
     });
     Object.entries(overrides).forEach(([k, v]) => usp.set(k, v));
     return usp.toString();
@@ -121,10 +126,10 @@ export default async function DashboardPage(props?: { searchParams?: SP }) {
           <CardContent>
             <form className="grid grid-cols-1 md:grid-cols-5 gap-3" method="GET">
               <Input name="q" placeholder="氏名 / チーム" defaultValue={q} className="md:col-span-2" />
-              <Select name="pos" defaultValue={posJp || undefined}>
+              <Select name="pos" defaultValue={posSp || undefined}>
                 <SelectTrigger><SelectValue placeholder="ポジション" /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">すべて</SelectItem>
+                  <SelectItem value="__all">すべて</SelectItem>
                   <SelectItem value="投手">投手</SelectItem>
                   <SelectItem value="捕手">捕手</SelectItem>
                   <SelectItem value="内野手">内野手</SelectItem>
@@ -132,18 +137,18 @@ export default async function DashboardPage(props?: { searchParams?: SP }) {
                   <SelectItem value="その他">その他</SelectItem>
                 </SelectContent>
               </Select>
-              <Select name="side" defaultValue={sideJp || undefined}>
+              <Select name="side" defaultValue={sideSp || undefined}>
                 <SelectTrigger><SelectValue placeholder="投球側" /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">すべて</SelectItem>
+                  <SelectItem value="__all">すべて</SelectItem>
                   <SelectItem value="右">右</SelectItem>
                   <SelectItem value="左">左</SelectItem>
                 </SelectContent>
               </Select>
-              <Select name="bat" defaultValue={batJp || undefined}>
+              <Select name="bat" defaultValue={batSp || undefined}>
                 <SelectTrigger><SelectValue placeholder="打席" /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">すべて</SelectItem>
+                  <SelectItem value="__all">すべて</SelectItem>
                   <SelectItem value="右">右</SelectItem>
                   <SelectItem value="左">左</SelectItem>
                   <SelectItem value="両">両</SelectItem>
