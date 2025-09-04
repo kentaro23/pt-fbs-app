@@ -14,7 +14,7 @@ import { Separator } from "@/components/ui/separator";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { computeComposition } from "@/lib/calc";
 import { MOVEMENT_LABEL_JP, ROM_MAX } from "@/lib/constants";
-import type { Movement, ThrowingJp } from "@/lib/types";
+import type { Movement, ThrowingJp, Mark3 } from "@/lib/types";
 
 const movements = Object.keys(MOVEMENT_LABEL_JP) as Movement[];
 
@@ -185,7 +185,7 @@ export function AssessmentForm({ onSubmit, defaultValues }: { onSubmit: (v: Asse
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <Label>開脚</Label>
-            <Select onValueChange={(v) => form.setValue("openHipMark", v as any)}>
+            <Select onValueChange={(v: Mark3) => form.setValue("openHipMark", v)}>
               <SelectTrigger className="w-full"><SelectValue placeholder="選択 (○/△/×)" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="CIRCLE">○</SelectItem>
@@ -196,7 +196,7 @@ export function AssessmentForm({ onSubmit, defaultValues }: { onSubmit: (v: Asse
           </div>
           <div>
             <Label>ブリッジ</Label>
-            <Select onValueChange={(v) => form.setValue("bridgeMark", v as any)}>
+            <Select onValueChange={(v: Mark3) => form.setValue("bridgeMark", v)}>
               <SelectTrigger className="w-full"><SelectValue placeholder="選択 (○/△/×)" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="CIRCLE">○</SelectItem>
@@ -207,7 +207,7 @@ export function AssessmentForm({ onSubmit, defaultValues }: { onSubmit: (v: Asse
           </div>
           <div>
             <Label>前屈</Label>
-            <Select onValueChange={(v) => form.setValue("forwardBendMark", v as any)}>
+            <Select onValueChange={(v: Mark3) => form.setValue("forwardBendMark", v)}>
               <SelectTrigger className="w-full"><SelectValue placeholder="選択 (○/△/×)" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="CIRCLE">○</SelectItem>
