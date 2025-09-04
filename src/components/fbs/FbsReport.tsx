@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { RomRadar } from "@/components/charts/RomRadar";
 import { TriangleBalance } from "@/components/charts/TriangleBalance";
+import { MetricRadar, type MetricRadarDatum } from "@/components/charts/MetricRadar";
 import { MOVEMENT_LABEL_JP } from "@/lib/constants";
 import { scoreTriangle, normalizeRom } from "@/lib/calc";
 import type { Assessment, Athlete, Rom, Movement, Mark3 } from "@/lib/types";
@@ -14,6 +15,16 @@ function mark3ToScore(m?: Mark3 | null): number | undefined {
   if (m === "TRIANGLE") return 2;
   if (m === "CROSS") return 1;
   return undefined;
+}
+
+function norm(v: number | null | undefined, max: number): number {
+  if (typeof v !== "number" || !isFinite(v) || max <= 0) return 0;
+  return Math.max(0, Math.min(1, v / max));
+}
+
+function normMark3(m?: Mark3 | null): number {
+  const s = mark3ToScore(m);
+  return typeof s === "number" ? s / 3 : 0;
 }
 
 export function FbsReport({ assessment, athlete, roms, targets }: { assessment: Assessment; athlete: Athlete; roms: Rom[]; targets?: Partial<Record<Movement, number>> }) {
@@ -30,6 +41,35 @@ export function FbsReport({ assessment, athlete, roms, targets }: { assessment: 
   });
 
   const tri = scoreTriangle({ swingSpeed: assessment.swingSpeed ?? undefined, romMap });
+
+  // 球速関連（8軸）: 開脚, ブリッジ, 前屈, メディシンボール, 垂直跳び, 3連幅跳び, スクワット, LBI
+  const speedRelatedData: MetricRadarDatum[] = [
+    { name: "開脚", value: normMark3(assessment.openHipMark) },
+    { name: "ブリッジ", value: normMark3(assessment.bridgeMark) },
+    { name: "前屈", value: normMark3(assessment.forwardBendMark) },
+    { name: "MB投げ", value: norm(assessment.medicineBallThrow, 20) },
+    { name: "垂直跳び", value: norm(assessment.verticalJumpCm, 70) },
+    { name: "3連幅跳び", value: norm(assessment.tripleBroadJumpM, 9) },
+    { name: "スクワット", value: norm(assessment.squatWeightKg, 200) },
+    { name: "LBI", value: norm(assessment.leanBodyIndex, 25) },
+  ];
+
+  // スイング関連（3軸）: LBI, 垂直跳び, 握力平均（上限70）
+  const gripAvg = ((): number | undefined => {
+    const gl = assessment.gripLeftKg;
+    const gr = assessment.gripRightKg;
+    if (typeof gl === "number" || typeof gr === "number") {
+      const n = (Number(!!gl) + Number(!!gr)) || 1;
+      return ((gl ?? 0) + (gr ?? 0)) / n;
+    }
+    return undefined;
+  })();
+
+  const swingRelatedData: MetricRadarDatum[] = [
+    { name: "LBI", value: norm(assessment.leanBodyIndex, 25) },
+    { name: "垂直跳び", value: norm(assessment.verticalJumpCm, 70) },
+    { name: "握力平均", value: norm(gripAvg ?? null, 70) },
+  ];
 
   return (
     <div className="max-w-4xl mx-auto p-4 bg-white">
@@ -61,10 +101,26 @@ export function FbsReport({ assessment, athlete, roms, targets }: { assessment: 
             </CardContent>
           </Card>
 
-        <Card>
+          <Card>
             <CardHeader><CardTitle>三角チャート</CardTitle></CardHeader>
             <CardContent>
               <TriangleBalance score={tri} />
+            </CardContent>
+          </Card>
+        </section>
+
+        {/* 追加のレーダー: 球速関連（8軸）とスイング関連（3軸） */}
+        <section className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <Card>
+            <CardHeader><CardTitle>球速関連 レーダー</CardTitle></CardHeader>
+            <CardContent>
+              <MetricRadar data={speedRelatedData} title="球速関連" />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader><CardTitle>スイング関連 レーダー</CardTitle></CardHeader>
+            <CardContent>
+              <MetricRadar data={swingRelatedData} title="スイング関連" />
             </CardContent>
           </Card>
         </section>

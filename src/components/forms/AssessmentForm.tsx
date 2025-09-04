@@ -183,7 +183,7 @@ export function AssessmentForm({ onSubmit, defaultValues }: { onSubmit: (v: Asse
       </section>
 
       <section>
-        <h2 className="text-lg font-semibold mb-2">球速関連 8項目</h2>
+        <h2 className="text-lg font-semibold mb-2">その他項目</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <Label>開脚</Label>
