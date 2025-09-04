@@ -4,6 +4,17 @@ import type { Rom, Athlete as ReportAthlete, Assessment as ReportAssessment, Thr
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
+function positionToJp(p: string): string {
+  const map: Record<string,string> = {
+    PITCHER: "投手",
+    CATCHER: "捕手",
+    INFIELDER: "内野手",
+    OUTFIELDER: "外野手",
+    OTHER: "その他",
+  };
+  return map[p] ?? p;
+}
+
 export default async function FbsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const a = await prisma.assessment.findUnique({ where: { id }, include: { athlete: true } });
@@ -16,7 +27,7 @@ export default async function FbsPage({ params }: { params: Promise<{ id: string
   const athlete: ReportAthlete = {
     name: a.athlete.name,
     team: a.athlete.team,
-    position: a.athlete.position,
+    position: positionToJp(a.athlete.position),
     throwingSide,
     batting,
     heightCm: a.athlete.heightCm,

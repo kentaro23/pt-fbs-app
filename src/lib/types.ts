@@ -35,6 +35,8 @@ export type Athlete = {
   bodyFatPercent: number;
 };
 
+export type Mark3 = "CIRCLE" | "TRIANGLE" | "CROSS";
+
 export type Assessment = {
   id: string;
   date: string; // ISO string
@@ -43,6 +45,14 @@ export type Assessment = {
   leanBodyIndex: number;
   swingSpeed?: number | null;
   notes?: string | null;
+  // 追加の指標
+  openHipMark?: Mark3 | null;
+  bridgeMark?: Mark3 | null;
+  forwardBendMark?: Mark3 | null;
+  medicineBallThrow?: number | null;
+  verticalJumpCm?: number | null;
+  tripleBroadJumpM?: number | null;
+  squatWeightKg?: number | null;
 };
 
 export type Rom = {
