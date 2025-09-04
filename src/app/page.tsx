@@ -6,11 +6,12 @@ export const fetchCache = 'force-no-store';
 import ClientRefGuard from "@/components/ClientRefGuard";
 import DashboardPage from "./(dashboard)/DashboardPage";
 
-export default async function Page() {
+export default async function Page({ searchParams }: { searchParams?: Promise<Record<string, string | undefined>> }) {
+  const sp = (await searchParams) ?? {};
   return (
     <>
       <ClientRefGuard />
-      <DashboardPage />
+      <DashboardPage searchParams={sp} />
     </>
   );
 }
