@@ -60,7 +60,9 @@ model Athlete {
   heightCm         Float
   weightKg         Float
   bodyFatPercent   Float
+  infieldPosition  InfieldPosition?
   assessments      Assessment[]
+  romTargets       RomTarget[]
 }
 
 model Assessment {
@@ -119,6 +121,14 @@ enum MetricType {
   ROM
   MMT
   CUSTOM
+}
+
+// Detailed infield positions (for baseball infield)
+enum InfieldPosition {
+  FIRST_BASE
+  SECOND_BASE
+  THIRD_BASE
+  SHORTSTOP
 }
 
 // Tenant (Clinic/Team)
@@ -226,6 +236,17 @@ model Metric {
   value      Float?
   side       BodySide?
   movement   Movement?
+}
+
+// ROM target per athlete per movement
+model RomTarget {
+  id         String    @id @default(cuid())
+  athlete    Athlete   @relation(fields: [athleteId], references: [id])
+  athleteId  String
+  movement   Movement
+  targetDeg  Float
+
+  @@unique([athleteId, movement])
 }
 
 // Session lifecycle
