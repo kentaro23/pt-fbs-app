@@ -45,6 +45,13 @@ export default async function FbsPage({ params }: { params: Promise<{ id: string
     leanBodyIndex: a.leanBodyIndex,
     swingSpeed: a.swingSpeed,
     notes: a.notes ?? undefined,
+    openHipMark: a.openHipMark as any,
+    bridgeMark: a.bridgeMark as any,
+    forwardBendMark: a.forwardBendMark as any,
+    medicineBallThrow: a.medicineBallThrow ?? undefined,
+    verticalJumpCm: a.verticalJumpCm ?? undefined,
+    tripleBroadJumpM: a.tripleBroadJumpM ?? undefined,
+    squatWeightKg: a.squatWeightKg ?? undefined,
   };
 
   return (
