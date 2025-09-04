@@ -85,3 +85,151 @@ model Rom {
   valueDeg      Float
   @@unique([assessmentId, movement, side])
 }
+
+// ====== PT-FBS Core: RBAC / Tenant / Patients / Records / Sessions (Minimal) ======
+
+// Roles and types
+enum Role { OWNER ADMIN THERAPIST ASSISTANT VIEWER ATHLETE }
+enum SessionStatus { SCHEDULED CHECKED_IN COMPLETED CANCELLED NO_SHOW RESCHEDULED }
+enum RecordType { SOAP EVAL PROGRESS }
+enum MetricType { VAS NRS ROM MMT CUSTOM }
+
+// Tenant (Clinic/Team)
+model Clinic {
+  id          String        @id @default(cuid())
+  name        String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  memberships Membership[]
+  patients    Patient[]
+  templates   EvaluationTemplate[]
+  records     Record[]
+  metrics     Metric[]
+  sessions    Session[]
+  reminders   Reminder[]
+}
+
+// Minimal user model for membership linkage (Auth導入前のプレースホルダ)
+model User {
+  id           String        @id @default(cuid())
+  email        String        @unique
+  name         String?
+  memberships  Membership[]
+  records      Record[]
+  assigned     Session[]     @relation("SessionAssignee")
+}
+
+// User x Clinic with role
+model Membership {
+  id        String  @id @default(cuid())
+  user      User    @relation(fields: [userId], references: [id])
+  userId    String
+  clinic    Clinic  @relation(fields: [clinicId], references: [id])
+  clinicId  String
+  role      Role
+  createdAt DateTime @default(now())
+
+  @@unique([userId, clinicId])
+}
+
+// Patient with clinic isolation
+model Patient {
+  id          String   @id @default(cuid())
+  clinic      Clinic   @relation(fields: [clinicId], references: [id])
+  clinicId    String
+  fullName    String
+  sex         String?
+  dob         DateTime?
+  phone       String?
+  email       String?
+  allergies   String[]
+  conditions  String[]
+  tags        String[]
+  consents    Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  records     Record[]
+  metrics     Metric[]
+  sessions    Session[]
+}
+
+// Shared or personal templates
+model EvaluationTemplate {
+  id        String      @id @default(cuid())
+  clinic    Clinic      @relation(fields: [clinicId], references: [id])
+  clinicId  String
+  owner     User?       @relation(fields: [ownerId], references: [id])
+  ownerId   String?
+  name      String
+  type      RecordType
+  content   Json
+  shared    Boolean     @default(true)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+}
+
+// Clinical record with hashtags & json content
+model Record {
+  id        String      @id @default(cuid())
+  clinic    Clinic      @relation(fields: [clinicId], references: [id])
+  clinicId  String
+  patient   Patient     @relation(fields: [patientId], references: [id])
+  patientId String
+  author    User?       @relation(fields: [authorId], references: [id])
+  authorId  String?
+  type      RecordType
+  hashtags  String[]
+  content   Json
+  createdAt DateTime    @default(now())
+}
+
+// Numeric metrics (VAS/NRS/ROM/MMT...)
+model Metric {
+  id         String      @id @default(cuid())
+  clinic     Clinic      @relation(fields: [clinicId], references: [id])
+  clinicId   String
+  patient    Patient     @relation(fields: [patientId], references: [id])
+  patientId  String
+  date       DateTime    @default(now())
+  metricType MetricType
+  label      String?
+  value      Float?
+  side       BodySide?
+  movement   Movement?
+}
+
+// Session lifecycle
+model Session {
+  id                String        @id @default(cuid())
+  clinic            Clinic        @relation(fields: [clinicId], references: [id])
+  clinicId          String
+  patient           Patient       @relation(fields: [patientId], references: [id])
+  patientId         String
+  status            SessionStatus @default(SCHEDULED)
+  scheduledAt       DateTime
+  checkedInAt       DateTime?
+  completedAt       DateTime?
+  cancelledAt       DateTime?
+  rescheduledReason String?
+  assignee          User?         @relation("SessionAssignee", fields: [assigneeId], references: [id])
+  assigneeId        String?
+  notes             String?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  reminders         Reminder[]
+}
+
+// Notification scheduling (placeholder)
+model Reminder {
+  id          String   @id @default(cuid())
+  clinic      Clinic   @relation(fields: [clinicId], references: [id])
+  clinicId    String
+  session     Session  @relation(fields: [sessionId], references: [id])
+  sessionId   String
+  channel     String
+  scheduledFor DateTime
+  sentAt      DateTime?
+}
