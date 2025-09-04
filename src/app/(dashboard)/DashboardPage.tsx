@@ -15,7 +15,6 @@ import ClientRefGuard from "@/components/ClientRefGuard";
 import DashboardClient from "@/components/DashboardClient";
 import { deleteAthleteAction } from "@/lib/actions";
 import type { $Enums, Prisma } from "@prisma/client";
-import { cache } from "react";
 
 function positionToJp(p: string): string {
   const map: Record<string,string> = {
@@ -86,6 +85,16 @@ export default async function DashboardPage(props?: { searchParams?: Record<stri
     hasDbError = true;
   }
   const totalPages = Math.max(1, Math.ceil(total / limit));
+
+  // クエリ文字列生成（undefinedや空文字は除外）
+  const buildQS = (base: Record<string, string | undefined>, overrides: Record<string, string>) => {
+    const usp = new URLSearchParams();
+    Object.entries(base).forEach(([k, v]) => {
+      if (typeof v === "string" && v.length) usp.set(k, v);
+    });
+    Object.entries(overrides).forEach(([k, v]) => usp.set(k, v));
+    return usp.toString();
+  };
 
   return (
     <DashboardClient>
@@ -235,10 +244,10 @@ export default async function DashboardPage(props?: { searchParams?: Record<stri
             </div>
             <div className="flex gap-2">
               <Button asChild variant="outline" disabled={page <= 1}>
-                <Link href={`/?${new URLSearchParams({ ...sp, page: String(page - 1) } as Record<string,string>).toString()}`}>前へ</Link>
+                <Link href={`/?${buildQS(sp, { page: String(page - 1) })}`}>前へ</Link>
               </Button>
               <Button asChild variant="outline" disabled={page >= totalPages}>
-                <Link href={`/?${new URLSearchParams({ ...sp, page: String(page + 1) } as Record<string,string>).toString()}`}>次へ</Link>
+                <Link href={`/?${buildQS(sp, { page: String(page + 1) })}`}>次へ</Link>
               </Button>
             </div>
           </div>
