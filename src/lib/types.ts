@@ -53,6 +53,8 @@ export type Assessment = {
   verticalJumpCm?: number | null;
   tripleBroadJumpM?: number | null;
   squatWeightKg?: number | null;
+  gripRightKg?: number | null;
+  gripLeftKg?: number | null;
 };
 
 export type Rom = {
