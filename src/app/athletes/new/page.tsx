@@ -1,6 +1,7 @@
 import { AthleteForm, type AthleteFormValues } from "@/components/forms/AthleteForm";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
+import type { $Enums } from "@prisma/client";
 
 async function createAthleteAction(values: AthleteFormValues) {
   "use server";
@@ -28,7 +29,7 @@ async function createAthleteAction(values: AthleteFormValues) {
     const entries = Object.entries(values.targets).filter(([, v]) => typeof v === "number") as Array<[string, number]>;
     if (entries.length) {
       await prisma.romTarget.createMany({
-        data: entries.map(([movement, targetDeg]) => ({ athleteId: athlete.id, movement: movement as any, targetDeg })),
+        data: entries.map(([movement, targetDeg]) => ({ athleteId: athlete.id, movement: movement as $Enums.Movement, targetDeg })),
         skipDuplicates: true,
       });
     }

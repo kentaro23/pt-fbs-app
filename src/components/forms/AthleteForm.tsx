@@ -14,6 +14,8 @@ import { MOVEMENT_LABEL_JP } from "@/lib/constants";
 
 const movements = Object.keys(MOVEMENT_LABEL_JP) as Movement[];
 
+type InfieldJp = "一塁手" | "二塁手" | "三塁手" | "遊撃手";
+
 const schema = z.object({
   name: z.string().min(1, "必須"),
   team: z.string().optional(),
@@ -76,7 +78,7 @@ export function AthleteForm({ onSubmit }: { onSubmit: (v: AthleteFormValues) => 
         {pos === "内野手" && (
           <div>
             <Label>内野手（詳細）</Label>
-            <Select onValueChange={(v) => form.setValue("infieldPosition", v as any)}>
+            <Select onValueChange={(v: InfieldJp) => form.setValue("infieldPosition", v)}>
               <SelectTrigger><SelectValue placeholder="選択" /></SelectTrigger>
               <SelectContent>
                 {(["一塁手","二塁手","三塁手","遊撃手"]).map(p => (
