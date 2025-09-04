@@ -34,7 +34,7 @@ export function TriangleBalance({ score }: { score: TriangleScore }) {
 
       <text x={top.x} y={top.y - 8} textAnchor="middle" className="fill-foreground text-sm">Speed</text>
       {/* 左下ラベルが見切れないよう、頂点の右側に配置して左寄せ */}
-      <text x={left.x + 8} y={left.y + 16} textAnchor="start" className="fill-foreground text-sm">Power</text>
+      <text x={left.x + 4} y={left.y + 16} textAnchor="start" className="fill-foreground text-sm">Power</text>
       {/* 右下ラベルは右端内に収めて右寄せ */}
       <text x={width - 4} y={right.y + 16} textAnchor="end" className="fill-foreground text-sm">Flexibility</text>
 
