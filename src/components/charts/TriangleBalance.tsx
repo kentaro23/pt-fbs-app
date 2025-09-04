@@ -26,15 +26,16 @@ export function TriangleBalance({ score }: { score: TriangleScore }) {
   const polygon = `${pSpeed.x},${pSpeed.y} ${pFlex.x},${pFlex.y} ${pPower.x},${pPower.y}`;
 
   return (
-    <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
+    <svg className="block mx-auto" width={width} height={height} viewBox={`0 0 ${width} ${height}`}> 
       <polygon points={`${top.x},${top.y} ${right.x},${right.y} ${left.x},${left.y}`} fill="none" stroke="#94a3b8" strokeWidth={2} />
       <circle cx={top.x} cy={top.y} r={3} fill="#0ea5e9" />
       <circle cx={left.x} cy={left.y} r={3} fill="#22c55e" />
       <circle cx={right.x} cy={right.y} r={3} fill="#f59e0b" />
 
       <text x={top.x} y={top.y - 8} textAnchor="middle" className="fill-foreground text-sm">Speed</text>
-      <text x={left.x - 8} y={left.y + 16} textAnchor="end" className="fill-foreground text-sm">Power</text>
-      {/* 右端のラベルが切れないよう、右端内に収めて右寄せにする */}
+      {/* 左下ラベルが見切れないよう、頂点の右側に配置して左寄せ */}
+      <text x={left.x + 8} y={left.y + 16} textAnchor="start" className="fill-foreground text-sm">Power</text>
+      {/* 右下ラベルは右端内に収めて右寄せ */}
       <text x={width - 4} y={right.y + 16} textAnchor="end" className="fill-foreground text-sm">Flexibility</text>
 
       <polygon points={polygon} fill="#3b82f6" opacity={0.35} stroke="#1d4ed8" />
