@@ -76,6 +76,15 @@ model Assessment {
   swingSpeed       Float?
   notes            String?
   roms             Rom[]
+
+  // 追加のパフォーマンス指標
+  openHipMark      Mark3?
+  bridgeMark       Mark3?
+  forwardBendMark  Mark3?
+  medicineBallThrow Float?
+  verticalJumpCm    Float?
+  tripleBroadJumpM  Float?
+  squatWeightKg     Float?
 }
 
 model Rom {
@@ -121,6 +130,13 @@ enum MetricType {
   ROM
   MMT
   CUSTOM
+}
+
+// 3値評価（○/△/×）
+enum Mark3 {
+  CIRCLE
+  TRIANGLE
+  CROSS
 }
 
 // Detailed infield positions (for baseball infield)
