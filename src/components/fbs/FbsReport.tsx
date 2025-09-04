@@ -31,16 +31,6 @@ export function FbsReport({ assessment, athlete, roms, targets }: { assessment: 
 
   const tri = scoreTriangle({ swingSpeed: assessment.swingSpeed ?? undefined, romMap });
 
-  const perfRows: Array<{ label: string; value?: number | string; score?: number; unit?: string }> = [
-    { label: "開脚", score: mark3ToScore(assessment.openHipMark) },
-    { label: "ブリッジ", score: mark3ToScore(assessment.bridgeMark) },
-    { label: "前屈", score: mark3ToScore(assessment.forwardBendMark) },
-    { label: "メディシンボール投げ", value: assessment.medicineBallThrow, unit: "m" },
-    { label: "垂直跳び", value: assessment.verticalJumpCm, unit: "cm" },
-    { label: "3連続立ち幅跳び", value: assessment.tripleBroadJumpM, unit: "m" },
-    { label: "スクワット重量", value: assessment.squatWeightKg, unit: "kg" },
-  ];
-
   return (
     <div className="max-w-4xl mx-auto p-4 bg-white">
       <div className="space-y-4">
@@ -71,7 +61,7 @@ export function FbsReport({ assessment, athlete, roms, targets }: { assessment: 
             </CardContent>
           </Card>
 
-          <Card>
+        <Card>
             <CardHeader><CardTitle>三角チャート</CardTitle></CardHeader>
             <CardContent>
               <TriangleBalance score={tri} />
@@ -121,7 +111,6 @@ export function FbsReport({ assessment, athlete, roms, targets }: { assessment: 
             <CardHeader><CardTitle>球速関連 指標</CardTitle></CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {/* 三値マーク（○/△/×）はスコア3,2,1でバー表示 */}
                 {[
                   { label: "開脚", score: mark3ToScore(assessment.openHipMark) },
                   { label: "ブリッジ", score: mark3ToScore(assessment.bridgeMark) },
@@ -136,7 +125,6 @@ export function FbsReport({ assessment, athlete, roms, targets }: { assessment: 
                   </div>
                 ))}
 
-                {/* 数値系 */}
                 {[
                   { label: "メディシンボール投げ", value: assessment.medicineBallThrow, unit: "m" },
                   { label: "垂直跳び", value: assessment.verticalJumpCm, unit: "cm" },

@@ -1,8 +1,9 @@
 import { prisma } from "@/lib/db";
 import { FbsReport } from "@/components/fbs/FbsReport";
-import type { Rom, Athlete as ReportAthlete, Assessment as ReportAssessment, ThrowingJp, BattingJp, Movement } from "@/lib/types";
+import type { Rom, Athlete as ReportAthlete, Assessment as ReportAssessment, ThrowingJp, BattingJp, Movement, Mark3 } from "@/lib/types";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import type { $Enums } from "@prisma/client";
 
 function positionToJp(p: string): string {
   const map: Record<string,string> = {
@@ -13,6 +14,10 @@ function positionToJp(p: string): string {
     OTHER: "その他",
   };
   return map[p] ?? p;
+}
+
+function toMark3(m: $Enums.Mark3 | null): Mark3 | undefined {
+  return (m ?? undefined) as unknown as Mark3 | undefined;
 }
 
 export default async function FbsPage({ params }: { params: Promise<{ id: string }> }) {
@@ -45,9 +50,9 @@ export default async function FbsPage({ params }: { params: Promise<{ id: string
     leanBodyIndex: a.leanBodyIndex,
     swingSpeed: a.swingSpeed,
     notes: a.notes ?? undefined,
-    openHipMark: a.openHipMark as any,
-    bridgeMark: a.bridgeMark as any,
-    forwardBendMark: a.forwardBendMark as any,
+    openHipMark: toMark3(a.openHipMark),
+    bridgeMark: toMark3(a.bridgeMark),
+    forwardBendMark: toMark3(a.forwardBendMark),
     medicineBallThrow: a.medicineBallThrow ?? undefined,
     verticalJumpCm: a.verticalJumpCm ?? undefined,
     tripleBroadJumpM: a.tripleBroadJumpM ?? undefined,
