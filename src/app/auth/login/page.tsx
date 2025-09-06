@@ -22,6 +22,7 @@ export default function LoginPage() {
         <CardContent className="space-y-4">
           {registered && <div className="text-sm text-emerald-600">登録が完了しました。ログインしてください。</div>}
           {e === "invalid" && <div className="text-sm text-red-600">メールまたはパスワードが違います。</div>}
+          {e === "db" && <div className="text-sm text-red-600">ログイン時にエラーが発生しました。時間をおいてお試しください。</div>}
           <form action={async (fd: FormData) => { setSub(true); await loginPasswordAction(fd); }} className="space-y-3">
             <div>
               <label className="block text-sm">メールアドレス</label>
