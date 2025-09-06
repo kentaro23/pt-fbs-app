@@ -11,11 +11,23 @@ function hasDigest(err: unknown): err is RedirectLike {
 }
 function isRedirectError(err: unknown): boolean {
   try {
-    // Next.js redirect() throws an error object with a digest starting with 'NEXT_REDIRECT'
-    return hasDigest(err) && typeof err.digest === 'string' && err.digest.startsWith('NEXT_REDIRECT');
+    // Next.js redirect() throws an error object that has a digest
+    return hasDigest(err);
   } catch {
     return false;
   }
+}
+
+function classifyDbError(err: unknown): string {
+  if (err instanceof Error) {
+    const m = err.message.toLowerCase();
+    if (m.includes('permission') || m.includes('denied')) return 'perm';
+    if (m.includes('authentication') || m.includes('password')) return 'auth';
+    if (m.includes('relation') && m.includes('does not exist')) return 'notable';
+    if (m.includes('timeout')) return 'timeout';
+    if (m.includes('ecconn') || m.includes('econn') || m.includes('refused') || m.includes('host') || m.includes('enotfound')) return 'network';
+  }
+  return 'unknown';
 }
 
 export async function loginAction(_formData: FormData) {
@@ -127,7 +139,7 @@ export async function registerAction(formData: FormData) {
     redirect("/auth/login?registered=1");
   } catch (err) {
     if (isRedirectError(err)) throw err;
-    redirect("/auth/register?e=db");
+    redirect(`/auth/register?e=db_${classifyDbError(err)}`);
   }
 }
 
@@ -159,7 +171,7 @@ export async function loginPasswordAction(formData: FormData) {
     redirect("/");
   } catch (err) {
     if (isRedirectError(err)) throw err;
-    redirect("/auth/login?e=db");
+    redirect(`/auth/login?e=db_${classifyDbError(err)}`);
   }
 }
 
