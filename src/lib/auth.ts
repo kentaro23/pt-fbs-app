@@ -90,7 +90,7 @@ async function ensureUserTable() {
 // Username(email) + password registration
 export async function registerAction(formData: FormData) {
   try {
-    if (!process.env.DATABASE_URL) {
+    if (!(process.env.DATABASE_URL || process.env.PRISMA_DATABASE_URL)) {
       redirect("/auth/register?e=noenv");
     }
     try {
@@ -146,7 +146,7 @@ export async function registerAction(formData: FormData) {
 // Username(email) + password login
 export async function loginPasswordAction(formData: FormData) {
   try {
-    if (!process.env.DATABASE_URL) {
+    if (!(process.env.DATABASE_URL || process.env.PRISMA_DATABASE_URL)) {
       redirect("/auth/login?e=noenv");
     }
     await ensureUserTable();

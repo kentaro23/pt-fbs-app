@@ -25,7 +25,7 @@ export default function RegisterPage() {
           {e === "col" && <div className="text-sm text-red-600">パスワード保存欄の準備に失敗しました。</div>}
           {e === "hash" && <div className="text-sm text-red-600">パスワードの暗号化に失敗しました。</div>}
           {e === "insert" && <div className="text-sm text-red-600">ユーザー作成に失敗しました。別のメールでお試しください。</div>}
-          {e === "noenv" && <div className="text-sm text-red-600">環境変数 DATABASE_URL が未設定です。管理者に連絡してください。</div>}
+          {e === "noenv" && <div className="text-sm text-red-600">環境変数 DATABASE_URL / PRISMA_DATABASE_URL が未設定です。管理者に連絡してください。</div>}
           {e?.startsWith("db_") && <div className="text-sm text-red-600">登録時にエラーが発生しました（{e.replace("db_","") }）。管理者に連絡してください。</div>}
           {e === "exists" && <div className="text-sm text-red-600">このメールは既に登録されています。</div>}
           <form action={async (fd: FormData) => { setSub(true); await registerAction(fd); }} className="space-y-3">
