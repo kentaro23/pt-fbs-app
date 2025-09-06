@@ -9,7 +9,7 @@ export const runtime = 'nodejs';
 export const fetchCache = 'force-no-store';
 
 export default async function BillingPage() {
-  if (!isAuthenticated()) {
+  if (!(await isAuthenticated())) {
     redirect("/");
   }
   return (

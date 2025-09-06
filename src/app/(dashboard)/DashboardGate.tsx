@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default async function DashboardGate() {
-  const authed = isAuthenticated();
+  const authed = await isAuthenticated();
 
   return (
     <main className="p-6 space-y-4">

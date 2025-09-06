@@ -22,7 +22,7 @@ export async function logoutAction() {
   redirect("/");
 }
 
-export function isAuthenticated(): boolean {
+export async function isAuthenticated(): Promise<boolean> {
   const c = cookies();
   return Boolean(c.get("session")?.value);
 }

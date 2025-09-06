@@ -8,7 +8,7 @@ export const runtime = 'nodejs';
 export const fetchCache = 'force-no-store';
 
 export default async function AthletesPage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
-  if (!isAuthenticated()) {
+  if (!(await isAuthenticated())) {
     redirect("/");
   }
   const sp = (await searchParams) ?? {};
