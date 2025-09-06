@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 export async function loginAction(_formData: FormData) {
-  const c = cookies();
+  const c = await cookies();
   const sessionId = Math.random().toString(36).slice(2) + Date.now().toString(36);
   c.set("session", sessionId, {
     httpOnly: true,
@@ -17,13 +17,13 @@ export async function loginAction(_formData: FormData) {
 }
 
 export async function logoutAction() {
-  const c = cookies();
+  const c = await cookies();
   c.delete("session");
   redirect("/");
 }
 
 export async function isAuthenticated(): Promise<boolean> {
-  const c = cookies();
+  const c = await cookies();
   return Boolean(c.get("session")?.value);
 }
 
