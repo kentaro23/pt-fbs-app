@@ -125,9 +125,9 @@ export default async function DashboardPage(props?: { searchParams?: SP }) {
           </CardHeader>
           <CardContent>
             <form className="grid grid-cols-1 md:grid-cols-5 gap-3" method="GET">
-              <Input name="q" placeholder="氏名 / チーム" defaultValue={q} className="md:col-span-2" />
+              <Input name="q" placeholder="氏名 / チーム" defaultValue={q} className="md:col-span-2 border-black/40" />
               <Select name="pos" defaultValue={posSp || undefined}>
-                <SelectTrigger><SelectValue placeholder="ポジション" /></SelectTrigger>
+                <SelectTrigger className="border-black/40"><SelectValue placeholder="ポジション" /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="__all">すべて</SelectItem>
                   <SelectItem value="投手">投手</SelectItem>
@@ -138,7 +138,7 @@ export default async function DashboardPage(props?: { searchParams?: SP }) {
                 </SelectContent>
               </Select>
               <Select name="side" defaultValue={sideSp || undefined}>
-                <SelectTrigger><SelectValue placeholder="投球側" /></SelectTrigger>
+                <SelectTrigger className="border-black/40"><SelectValue placeholder="投球側" /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="__all">すべて</SelectItem>
                   <SelectItem value="右">右</SelectItem>
@@ -146,7 +146,7 @@ export default async function DashboardPage(props?: { searchParams?: SP }) {
                 </SelectContent>
               </Select>
               <Select name="bat" defaultValue={batSp || undefined}>
-                <SelectTrigger><SelectValue placeholder="打席" /></SelectTrigger>
+                <SelectTrigger className="border-black/40"><SelectValue placeholder="打席" /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="__all">すべて</SelectItem>
                   <SelectItem value="右">右</SelectItem>
@@ -156,7 +156,7 @@ export default async function DashboardPage(props?: { searchParams?: SP }) {
               </Select>
               <div className="grid grid-cols-2 gap-2">
                 <Select name="sort" defaultValue={sort}>
-                  <SelectTrigger><SelectValue placeholder="並べ替え" /></SelectTrigger>
+                  <SelectTrigger className="border-black/40"><SelectValue placeholder="並べ替え" /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="createdAt_desc">新しい順</SelectItem>
                     <SelectItem value="createdAt_asc">古い順</SelectItem>
@@ -165,7 +165,7 @@ export default async function DashboardPage(props?: { searchParams?: SP }) {
                   </SelectContent>
                 </Select>
                 <Select name="limit" defaultValue={String(limit)}>
-                  <SelectTrigger><SelectValue placeholder="件数/頁" /></SelectTrigger>
+                  <SelectTrigger className="border-black/40"><SelectValue placeholder="件数/頁" /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="10">10件</SelectItem>
                     <SelectItem value="20">20件</SelectItem>
@@ -194,9 +194,9 @@ export default async function DashboardPage(props?: { searchParams?: SP }) {
             <div className="text-xs text-muted-foreground">{hasDbError ? 0 : total}名</div>
           </CardHeader>
           <CardContent className="p-0">
-            <Table>
+            <Table className="border border-black/40 rounded-md overflow-hidden">
               <TableHeader>
-                <TableRow className="bg-slate-50/70">
+                <TableRow className="bg-slate-50/70 border-b border-black">
                   <TableHead className="text-left">氏名</TableHead>
                   <TableHead className="text-center">チーム</TableHead>
                   <TableHead className="text-center">ポジション</TableHead>
@@ -207,7 +207,7 @@ export default async function DashboardPage(props?: { searchParams?: SP }) {
               </TableHeader>
               <TableBody>
                 {athletes.map(a => (
-                  <TableRow key={a.id} className="hover:bg-accent/40">
+                  <TableRow key={a.id} className="hover:bg-accent/40 odd:bg-muted/30 border-b border-black/10">
                     <TableCell className="text-left">
                       <Link href={`/athletes/${a.id}`} className="text-primary font-medium hover:underline">
                         {a.name}
