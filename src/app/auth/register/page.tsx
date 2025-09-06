@@ -20,6 +20,7 @@ export default function RegisterPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           {e === "missing" && <div className="text-sm text-red-600">氏名・メール・パスワードは必須です。</div>}
+          {e === "noenv" && <div className="text-sm text-red-600">環境変数 DATABASE_URL が未設定です。管理者に連絡してください。</div>}
           {e === "db" && <div className="text-sm text-red-600">登録時にエラーが発生しました。時間をおいてお試しください。</div>}
           {e === "exists" && <div className="text-sm text-red-600">このメールは既に登録されています。</div>}
           <form action={async (fd: FormData) => { setSub(true); await registerAction(fd); }} className="space-y-3">
@@ -28,7 +29,7 @@ export default function RegisterPage() {
               <Input name="email" type="email" required autoComplete="email" />
             </div>
             <div>
-              <label className="block text-sm">氏名（任意）</label>
+              <label className="block text-sm">氏名</label>
               <Input name="name" type="text" required autoComplete="name" />
             </div>
             <div>

@@ -33,6 +33,9 @@ export async function isAuthenticated(): Promise<boolean> {
 // Username(email) + password registration
 export async function registerAction(formData: FormData) {
   try {
+    if (!process.env.DATABASE_URL) {
+      redirect("/auth/register?e=noenv");
+    }
     const email = (formData.get("email") ?? "").toString().trim();
     const name = (formData.get("name") ?? "").toString().trim();
     const password = (formData.get("password") ?? "").toString();
@@ -54,6 +57,9 @@ export async function registerAction(formData: FormData) {
 // Username(email) + password login
 export async function loginPasswordAction(formData: FormData) {
   try {
+    if (!process.env.DATABASE_URL) {
+      redirect("/auth/login?e=noenv");
+    }
     const email = (formData.get("email") ?? "").toString().trim();
     const password = (formData.get("password") ?? "").toString();
     const c = await cookies();
