@@ -7,7 +7,7 @@ import ClientRefGuard from "@/components/ClientRefGuard";
 import DashboardGate from "./(dashboard)/DashboardGate";
 
 export default async function Page({ searchParams }: { searchParams?: Promise<Record<string, string | undefined>> }) {
-  const sp = (await searchParams) ?? {};
+  await searchParams;
   return (
     <>
       <ClientRefGuard />

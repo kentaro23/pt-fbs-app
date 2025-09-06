@@ -6,6 +6,7 @@ export const fetchCache = 'force-no-store';
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import Link from "next/link";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -53,9 +54,9 @@ export default function RootLayout({
           <div className="container-app h-14 flex items-center justify-between">
             <div className="font-semibold">FBS App</div>
             <nav className="flex items-center gap-3 text-sm">
-              <a href="/" className="hover:underline">ホーム</a>
-              <a href="/athletes" className="hover:underline">選手一覧</a>
-              <a href="/billing" className="hover:underline">サブスク</a>
+              <Link href="/" className="hover:underline">ホーム</Link>
+              <Link href="/athletes" className="hover:underline">選手一覧</Link>
+              <Link href="/billing" className="hover:underline">サブスク</Link>
             </nav>
           </div>
         </header>
