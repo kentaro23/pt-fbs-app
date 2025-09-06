@@ -175,8 +175,8 @@ export default async function DashboardPage(props?: { searchParams?: SP }) {
               </div>
               <input type="hidden" name="page" value="1" />
               <div className="md:col-span-5 flex gap-2">
-                <Button type="submit">適用</Button>
-                <Button type="reset" asChild variant="outline">
+                <Button type="submit" className="text-black bg-black/0 border border-black hover:bg-black hover:text-white">適用</Button>
+                <Button type="reset" asChild variant="outline" className="text-black border-black hover:bg-black hover:text-white">
                   <Link href="/">リセット</Link>
                 </Button>
               </div>
