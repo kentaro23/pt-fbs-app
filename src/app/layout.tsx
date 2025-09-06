@@ -48,10 +48,20 @@ export default function RootLayout({
         <meta name="msapplication-TileColor" content="#000000" />
         <meta name="msapplication-tap-highlight" content="no" />
       </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <header className="border-b bg-white/70 backdrop-blur sticky top-0 z-40">
+          <div className="container-app h-14 flex items-center justify-between">
+            <div className="font-semibold">FBS App</div>
+            <nav className="flex items-center gap-3 text-sm">
+              <a href="/" className="hover:underline">ホーム</a>
+              <a href="/athletes" className="hover:underline">選手一覧</a>
+              <a href="/billing" className="hover:underline">サブスク</a>
+            </nav>
+          </div>
+        </header>
+        <main className="container-app py-6">
+          {children}
+        </main>
       </body>
     </html>
   );

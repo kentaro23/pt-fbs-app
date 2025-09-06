@@ -184,3 +184,54 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ===== AppShell / Surface / Tables / Forms (additive) ===== */
+:root {
+  --surface: 255,255,255;
+  --surface-dark: 18,18,18;
+}
+
+body {
+  background:
+    radial-gradient(1200px 600px at 10% -10%, rgba(99,102,241,.08), transparent 60%),
+    radial-gradient(1000px 500px at 90% -10%, rgba(244,114,182,.08), transparent 60%),
+    linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.85));
+}
+
+.dark body {
+  background:
+    radial-gradient(1200px 600px at 10% -10%, rgba(99,102,241,.10), transparent 60%),
+    radial-gradient(1000px 500px at 90% -10%, rgba(244,114,182,.10), transparent 60%),
+    linear-gradient(180deg, rgba(0,0,0,0.65), rgba(0,0,0,0.65));
+}
+
+.container-app {
+  @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+}
+
+.card-surface {
+  @apply rounded-2xl border bg-white/90 backdrop-blur shadow-sm dark:bg-neutral-900/70;
+}
+
+.table-nice thead th {
+  @apply sticky top-0 z-10 bg-muted/70 backdrop-blur text-xs font-semibold uppercase tracking-wide;
+}
+.table-nice tbody tr {
+  @apply odd:bg-background even:bg-muted/20 hover:bg-muted/40 transition-colors;
+}
+.table-nice td, .table-nice th {
+  @apply p-3 align-middle;
+}
+
+input[type="text"], input[type="number"], input[type="email"], input[type="date"], select, textarea {
+  @apply rounded-lg border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-black/60;
+}
+
+@media print {
+  body { background: none !important; }
+  .print-surface { box-shadow: none !important; border: none !important; }
+  .print-a4 { width: 210mm; min-height: 297mm; margin: 0 auto; }
+  .print-m-0 { margin: 0 !important; }
+  .print-p-0 { padding: 0 !important; }
+  .print-text { color: #000 !important; }
+}
