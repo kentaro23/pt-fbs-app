@@ -4,14 +4,14 @@ export const runtime = 'nodejs';
 export const fetchCache = 'force-no-store';
 
 import ClientRefGuard from "@/components/ClientRefGuard";
-import DashboardPage from "./(dashboard)/DashboardPage";
+import DashboardGate from "./(dashboard)/DashboardGate";
 
 export default async function Page({ searchParams }: { searchParams?: Promise<Record<string, string | undefined>> }) {
   const sp = (await searchParams) ?? {};
   return (
     <>
       <ClientRefGuard />
-      <DashboardPage searchParams={sp} />
+      <DashboardGate />
     </>
   );
 }
