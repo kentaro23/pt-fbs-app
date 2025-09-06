@@ -5,11 +5,14 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import bcrypt from "bcryptjs";
 
+type RedirectLike = { digest?: unknown };
+function hasDigest(err: unknown): err is RedirectLike {
+  return typeof err === 'object' && err !== null && 'digest' in (err as Record<string, unknown>);
+}
 function isRedirectError(err: unknown): boolean {
   try {
     // Next.js redirect() throws an error object with a digest starting with 'NEXT_REDIRECT'
-    // Avoid importing internal helpers; detect by shape.
-    return typeof err === 'object' && err !== null && 'digest' in (err as any) && String((err as any).digest).startsWith('NEXT_REDIRECT');
+    return hasDigest(err) && typeof err.digest === 'string' && err.digest.startsWith('NEXT_REDIRECT');
   } catch {
     return false;
   }
