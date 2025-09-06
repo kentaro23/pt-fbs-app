@@ -20,6 +20,10 @@ export default function RegisterPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           {e === "missing" && <div className="text-sm text-red-600">氏名・メール・パスワードは必須です。</div>}
+          {e === "tb" && <div className="text-sm text-red-600">ユーザーテーブルの初期化に失敗しました。</div>}
+          {e === "col" && <div className="text-sm text-red-600">パスワード保存欄の準備に失敗しました。</div>}
+          {e === "hash" && <div className="text-sm text-red-600">パスワードの暗号化に失敗しました。</div>}
+          {e === "insert" && <div className="text-sm text-red-600">ユーザー作成に失敗しました。別のメールでお試しください。</div>}
           {e === "noenv" && <div className="text-sm text-red-600">環境変数 DATABASE_URL が未設定です。管理者に連絡してください。</div>}
           {e === "db" && <div className="text-sm text-red-600">登録時にエラーが発生しました。時間をおいてお試しください。</div>}
           {e === "exists" && <div className="text-sm text-red-600">このメールは既に登録されています。</div>}

@@ -56,7 +56,11 @@ export async function registerAction(formData: FormData) {
     if (!process.env.DATABASE_URL) {
       redirect("/auth/register?e=noenv");
     }
-    await ensureUserTable();
+    try {
+      await ensureUserTable();
+    } catch {
+      redirect("/auth/register?e=tb");
+    }
     const email = (formData.get("email") ?? "").toString().trim();
     const name = (formData.get("name") ?? "").toString().trim();
     const password = (formData.get("password") ?? "").toString();
@@ -81,9 +85,20 @@ export async function registerAction(formData: FormData) {
           await prisma.$executeRawUnsafe('ALTER TABLE user ADD COLUMN "passwordHash" TEXT');
         }
       }
-    } catch {}
-    const passwordHash = await bcrypt.hash(password, 10);
-    await prisma.user.create({ data: { email, name, passwordHash } });
+    } catch {
+      redirect("/auth/register?e=col");
+    }
+    let passwordHash = "";
+    try {
+      passwordHash = await bcrypt.hash(password, 10);
+    } catch {
+      redirect("/auth/register?e=hash");
+    }
+    try {
+      await prisma.user.create({ data: { email, name, passwordHash } });
+    } catch {
+      redirect("/auth/register?e=insert");
+    }
     redirect("/auth/login?registered=1");
   } catch (err) {
     redirect("/auth/register?e=db");
