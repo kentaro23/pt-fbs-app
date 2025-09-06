@@ -46,6 +46,21 @@ export async function registerAction(formData: FormData) {
     if (existing) {
       redirect("/auth/register?e=exists");
     }
+    // Ensure column passwordHash exists (first-run safety)
+    try {
+      const rows: Array<{ c: bigint }> = await prisma.$queryRawUnsafe(
+        "SELECT COUNT(*)::bigint AS c FROM information_schema.columns WHERE table_schema = 'public' AND (table_name = 'User' OR table_name = 'user') AND (column_name = 'passwordHash' OR column_name = 'passwordhash')"
+      );
+      const count = Number(rows?.[0]?.c || 0);
+      if (count === 0) {
+        try {
+          await prisma.$executeRawUnsafe('ALTER TABLE "User" ADD COLUMN "passwordHash" TEXT');
+        } catch (e) {
+          // try lowercase table name fallback
+          await prisma.$executeRawUnsafe('ALTER TABLE user ADD COLUMN "passwordHash" TEXT');
+        }
+      }
+    } catch {}
     const passwordHash = await bcrypt.hash(password, 10);
     await prisma.user.create({ data: { email, name, passwordHash } });
     redirect("/auth/login?registered=1");
