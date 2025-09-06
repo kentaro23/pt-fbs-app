@@ -14,10 +14,11 @@ export default async function DashboardGate() {
         </CardHeader>
         <CardContent className="space-y-4">
           {!authed ? (
-            <form action={loginAction} className="flex gap-3">
-              <Button type="submit" className="min-w-28 text-black bg-black/0 border border-black hover:bg-black hover:text-white">ログイン</Button>
+            <div className="flex items-center gap-3">
+              <Button asChild className="min-w-28 text-black bg-black/0 border border-black hover:bg-black hover:text-white"><Link href="/auth/login">ログイン</Link></Button>
+              <Button asChild variant="outline" className="min-w-28 text-black border-black hover:bg-black hover:text-white"><Link href="/auth/register">新規登録</Link></Button>
               <Link href="/">またはゲスト閲覧</Link>
-            </form>
+            </div>
           ) : (
             <div className="flex flex-col gap-3">
               <div className="text-sm text-muted-foreground">ログイン済み</div>

@@ -170,6 +170,7 @@ model User {
   id           String        @id @default(cuid())
   email        String        @unique
   name         String?
+  passwordHash String?
   memberships  Membership[]
   records      Record[]
   assigned     Appointment[]     @relation("AppointmentAssignee")

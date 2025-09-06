@@ -2,6 +2,8 @@
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { prisma } from "@/lib/db";
+import bcrypt from "bcryptjs";
 
 export async function loginAction(_formData: FormData) {
   const c = await cookies();
@@ -25,6 +27,48 @@ export async function logoutAction() {
 export async function isAuthenticated(): Promise<boolean> {
   const c = await cookies();
   return Boolean(c.get("session")?.value);
+}
+
+
+// Username(email) + password registration
+export async function registerAction(formData: FormData) {
+  const email = (formData.get("email") ?? "").toString().trim();
+  const name = (formData.get("name") ?? "").toString().trim() || null;
+  const password = (formData.get("password") ?? "").toString();
+  if (!email || !password) {
+    redirect("/auth/register?e=missing");
+  }
+  const existing = await prisma.user.findUnique({ where: { email } });
+  if (existing) {
+    redirect("/auth/register?e=exists");
+  }
+  const passwordHash = await bcrypt.hash(password, 10);
+  await prisma.user.create({ data: { email, name, passwordHash } });
+  redirect("/auth/login?registered=1");
+}
+
+// Username(email) + password login
+export async function loginPasswordAction(formData: FormData) {
+  const email = (formData.get("email") ?? "").toString().trim();
+  const password = (formData.get("password") ?? "").toString();
+  const c = await cookies();
+  const user = await prisma.user.findUnique({ where: { email } });
+  if (!user || !user.passwordHash) {
+    redirect("/auth/login?e=invalid");
+  }
+  const ok = await bcrypt.compare(password, user.passwordHash);
+  if (!ok) {
+    redirect("/auth/login?e=invalid");
+  }
+  // minimal cookie session (no db): store uid to identify
+  c.set("session", `uid:${user.id}` , {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: 60 * 60 * 24 * 7,
+  });
+  redirect("/");
 }
 
 
