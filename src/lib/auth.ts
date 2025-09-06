@@ -29,6 +29,26 @@ export async function isAuthenticated(): Promise<boolean> {
   return Boolean(c.get("session")?.value);
 }
 
+async function ensureUserTable() {
+  try {
+    await prisma.$executeRawUnsafe(
+      'CREATE TABLE IF NOT EXISTS "User" (id TEXT PRIMARY KEY, email TEXT UNIQUE NOT NULL, name TEXT, "passwordHash" TEXT)'
+    );
+  } catch (e) {
+    try {
+      await prisma.$executeRawUnsafe(
+        'CREATE TABLE IF NOT EXISTS user (id TEXT PRIMARY KEY, email TEXT UNIQUE NOT NULL, name TEXT, "passwordHash" TEXT)'
+      );
+    } catch (_) {}
+  }
+  try {
+    await prisma.$executeRawUnsafe('CREATE UNIQUE INDEX IF NOT EXISTS "user_email_unique" ON "User" (email)');
+  } catch (_) {
+    try {
+      await prisma.$executeRawUnsafe('CREATE UNIQUE INDEX IF NOT EXISTS user_email_unique ON user (email)');
+    } catch (__){ }
+  }
+}
 
 // Username(email) + password registration
 export async function registerAction(formData: FormData) {
@@ -36,6 +56,7 @@ export async function registerAction(formData: FormData) {
     if (!process.env.DATABASE_URL) {
       redirect("/auth/register?e=noenv");
     }
+    await ensureUserTable();
     const email = (formData.get("email") ?? "").toString().trim();
     const name = (formData.get("name") ?? "").toString().trim();
     const password = (formData.get("password") ?? "").toString();
@@ -75,6 +96,7 @@ export async function loginPasswordAction(formData: FormData) {
     if (!process.env.DATABASE_URL) {
       redirect("/auth/login?e=noenv");
     }
+    await ensureUserTable();
     const email = (formData.get("email") ?? "").toString().trim();
     const password = (formData.get("password") ?? "").toString();
     const c = await cookies();
