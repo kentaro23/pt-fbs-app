@@ -21,6 +21,7 @@ export default function RegisterPage() {
         <CardContent className="space-y-4">
           {e === "missing" && <div className="text-sm text-red-600">氏名・メール・パスワードは必須です。</div>}
           {e === "tb" && <div className="text-sm text-red-600">ユーザーテーブルの初期化に失敗しました。</div>}
+          {e === "user_table_missing" && <div className="text-sm text-red-600">ユーザーテーブルが見つかりません。管理者に連絡してください。</div>}
           {e === "col" && <div className="text-sm text-red-600">パスワード保存欄の準備に失敗しました。</div>}
           {e === "hash" && <div className="text-sm text-red-600">パスワードの暗号化に失敗しました。</div>}
           {e === "insert" && <div className="text-sm text-red-600">ユーザー作成に失敗しました。別のメールでお試しください。</div>}

@@ -61,6 +61,18 @@ async function ensureUserTable() {
       await prisma.$executeRawUnsafe('CREATE UNIQUE INDEX IF NOT EXISTS user_email_unique ON user (email)');
     } catch (__){ }
   }
+  // Verify presence
+  try {
+    const rows: Array<{ r: string | null }> = await prisma.$queryRawUnsafe(
+      "SELECT to_regclass('public.\"User\"')::text AS r"
+    );
+    const exists = rows && rows[0] && rows[0].r !== null;
+    if (!exists) {
+      throw new Error('user_table_missing');
+    }
+  } catch {
+    throw new Error('user_table_missing');
+  }
 }
 
 // Username(email) + password registration
