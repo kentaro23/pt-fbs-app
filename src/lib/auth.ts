@@ -5,6 +5,16 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import bcrypt from "bcryptjs";
 
+function isRedirectError(err: unknown): boolean {
+  try {
+    // Next.js redirect() throws an error object with a digest starting with 'NEXT_REDIRECT'
+    // Avoid importing internal helpers; detect by shape.
+    return typeof err === 'object' && err !== null && 'digest' in (err as any) && String((err as any).digest).startsWith('NEXT_REDIRECT');
+  } catch {
+    return false;
+  }
+}
+
 export async function loginAction(_formData: FormData) {
   const c = await cookies();
   const sessionId = Math.random().toString(36).slice(2) + Date.now().toString(36);
@@ -101,6 +111,7 @@ export async function registerAction(formData: FormData) {
     }
     redirect("/auth/login?registered=1");
   } catch (err) {
+    if (isRedirectError(err)) throw err;
     redirect("/auth/register?e=db");
   }
 }
@@ -132,6 +143,7 @@ export async function loginPasswordAction(formData: FormData) {
     });
     redirect("/");
   } catch (err) {
+    if (isRedirectError(err)) throw err;
     redirect("/auth/login?e=db");
   }
 }
