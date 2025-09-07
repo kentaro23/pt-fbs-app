@@ -47,38 +47,40 @@ export default function LandingHero({ authed = false }: { authed?: boolean }) {
         </motion.div>
       </div>
 
-      {/* Feature grid */}
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5, delay: 0.1 }} className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <Link href="/athletes">
-          <Card className="group h-full border-black/10 bg-white/70 transition hover:shadow-lg backdrop-blur">
-            <CardHeader className="flex flex-row items-center gap-3">
-              <div className="rounded-xl bg-blue-50 p-2 text-blue-600"><BookOpen /></div>
-              <CardTitle>選手管理</CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-black/70">選手一覧の確認と新規登録。</CardContent>
-          </Card>
-        </Link>
+      {/* Feature grid (未ログイン時のみ表示) */}
+      {!authed && (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5, delay: 0.1 }} className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <Link href="/athletes">
+            <Card className="group h-full border-black/10 bg-white/70 transition hover:shadow-lg backdrop-blur">
+              <CardHeader className="flex flex-row items-center gap-3">
+                <div className="rounded-xl bg-blue-50 p-2 text-blue-600"><BookOpen /></div>
+                <CardTitle>選手管理</CardTitle>
+              </CardHeader>
+              <CardContent className="text-sm text-black/70">選手一覧の確認と新規登録。</CardContent>
+            </Card>
+          </Link>
 
-        <Link href="/assessments/new">
-          <Card className="group h-full border-black/10 bg-white/70 transition hover:shadow-lg backdrop-blur">
-            <CardHeader className="flex flex-row items-center gap-3">
-              <div className="rounded-xl bg-emerald-50 p-2 text-emerald-600"><Activity /></div>
-              <CardTitle>測定入力</CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-black/70">可動域を左右別で入力。体組成・除脂肪指数も。</CardContent>
-          </Card>
-        </Link>
+          <Link href="/assessments/new">
+            <Card className="group h-full border-black/10 bg-white/70 transition hover:shadow-lg backdrop-blur">
+              <CardHeader className="flex flex-row items-center gap-3">
+                <div className="rounded-xl bg-emerald-50 p-2 text-emerald-600"><Activity /></div>
+                <CardTitle>測定入力</CardTitle>
+              </CardHeader>
+              <CardContent className="text-sm text-black/70">可動域を左右別で入力。体組成・除脂肪指数も。</CardContent>
+            </Card>
+          </Link>
 
-        <Link href="/athletes">
-          <Card className="group h-full border-black/10 bg-white/70 transition hover:shadow-lg backdrop-blur">
-            <CardHeader className="flex flex-row items-center gap-3">
-              <div className="rounded-xl bg-violet-50 p-2 text-violet-600"><FileChartColumn /></div>
-              <CardTitle>FBSレポート</CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-black/70">選手詳細から各アセスメントのFBSへ。</CardContent>
-          </Card>
-        </Link>
-      </motion.div>
+          <Link href="/athletes">
+            <Card className="group h-full border-black/10 bg-white/70 transition hover:shadow-lg backdrop-blur">
+              <CardHeader className="flex flex-row items-center gap-3">
+                <div className="rounded-xl bg-violet-50 p-2 text-violet-600"><FileChartColumn /></div>
+                <CardTitle>FBSレポート</CardTitle>
+              </CardHeader>
+              <CardContent className="text-sm text-black/70">選手詳細から各アセスメントのFBSへ。</CardContent>
+            </Card>
+          </Link>
+        </motion.div>
+      )}
     </div>
   );
 }
