@@ -113,7 +113,7 @@ export default async function DashboardPage(props?: { searchParams?: SP }) {
   return (
     <DashboardClient>
       <main className="p-6 space-y-6">
-        <LandingHero />
+        <LandingHero authed={true} />
         <ClientRefGuard />
         <div className="flex items-center justify-between gap-3">
           <h1 className="text-2xl font-bold">選手一覧</h1>
