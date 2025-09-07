@@ -9,20 +9,20 @@ import Link from "next/link";
 export default function LandingHero({ authed = false }: { authed?: boolean }) {
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:py-14">
-      <div className={authed ? "grid items-start gap-10" : "grid items-center gap-10 md:grid-cols-2"}>
-        {!authed && (
-          <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-            <div className="inline-flex items-center rounded-full border border-black/10 bg-white/70 px-3 py-1 text-xs text-black/70 shadow-sm backdrop-blur">
-              FBS App · 理学療法士のための評価 UI
-            </div>
-            <h1 className="mt-4 text-4xl font-bold tracking-tight sm:text-5xl">
-              直感的で美しいデザインで、<br className="hidden sm:block" />
-              測定から <span className="bg-gradient-to-r from-blue-600 to-emerald-500 bg-clip-text text-transparent">FBS</span> まで一気に。
-            </h1>
-            <p className="mt-4 max-w-prose text-base leading-7 text-black/70">
-              選手の基本情報・可動域測定を入力して、個別のフィードバックシート（FBS）へ。モバイル最適化＆PDF出力にも対応。
-            </p>
+      <div className="grid items-center gap-10 md:grid-cols-2">
+        <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+          <div className="inline-flex items-center rounded-full border border-black/10 bg-white/70 px-3 py-1 text-xs text-black/70 shadow-sm backdrop-blur">
+            FBS App · 理学療法士のための評価 UI
+          </div>
+          <h1 className="mt-4 text-4xl font-bold tracking-tight sm:text-5xl">
+            直感的で美しいデザインで、<br className="hidden sm:block" />
+            測定から <span className="bg-gradient-to-r from-blue-600 to-emerald-500 bg-clip-text text-transparent">FBS</span> まで一気に。
+          </h1>
+          <p className="mt-4 max-w-prose text-base leading-7 text-black/70">
+            選手の基本情報・可動域測定を入力して、個別のフィードバックシート（FBS）へ。モバイル最適化＆PDF出力にも対応。
+          </p>
 
+          {!authed && (
             <div className="mt-6 flex flex-wrap items-center gap-3">
               <Link href="/auth/login"><Button size="lg" className="rounded-2xl px-6 text-black bg-black/0 border border-black hover:bg-black hover:text-white">ログイン</Button></Link>
               <Link href="/auth/register"><Button size="lg" variant="outline" className="rounded-2xl px-6">新規登録</Button></Link>
@@ -30,8 +30,8 @@ export default function LandingHero({ authed = false }: { authed?: boolean }) {
                 またはゲスト閲覧 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </Link>
             </div>
-          </motion.div>
-        )}
+          )}
+        </motion.div>
 
         {/* Right: Glass card */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.05 }}>
