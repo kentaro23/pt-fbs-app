@@ -6,6 +6,7 @@ export const fetchCache = 'force-no-store';
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import GradientBg from "@/components/ui/GradientBg";
 import Link from "next/link";
 
 const geistSans = Geist({
@@ -50,6 +51,7 @@ export default function RootLayout({
         <meta name="msapplication-tap-highlight" content="no" />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <GradientBg />
         <header className="border-b bg-white/70 backdrop-blur sticky top-0 z-40">
           <div className="container-app h-14 flex items-center justify-between">
             <div className="font-semibold">FBS App</div>

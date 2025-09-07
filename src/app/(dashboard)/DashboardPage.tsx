@@ -4,6 +4,7 @@ export const runtime = 'nodejs';
 export const fetchCache = 'force-no-store';
 
 import Link from "next/link";
+import LandingHero from "@/components/landing/LandingHero";
 import { prisma } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -111,7 +112,8 @@ export default async function DashboardPage(props?: { searchParams?: SP }) {
 
   return (
     <DashboardClient>
-      <main className="p-6 space-y-4">
+      <main className="p-6 space-y-6">
+        <LandingHero />
         <ClientRefGuard />
         <div className="flex items-center justify-between gap-3">
           <h1 className="text-2xl font-bold">選手一覧</h1>
