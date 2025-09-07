@@ -2,9 +2,11 @@ import { AthleteForm, type AthleteFormValues } from "@/components/forms/AthleteF
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import type { $Enums } from "@prisma/client";
+import { requireUser } from "@/lib/auth";
 
 async function createAthleteAction(values: AthleteFormValues) {
   "use server";
+  const user = await requireUser();
   const positionMap = { "投手": "PITCHER", "捕手": "CATCHER", "内野手": "INFIELDER", "外野手": "OUTFIELDER", "その他": "OTHER" } as const;
   const infieldMap = { "一塁手": "FIRST_BASE", "二塁手": "SECOND_BASE", "三塁手": "THIRD_BASE", "遊撃手": "SHORTSTOP" } as const;
   const sideMap = { "右": "RIGHT", "左": "LEFT" } as const;
@@ -21,6 +23,7 @@ async function createAthleteAction(values: AthleteFormValues) {
       heightCm: values.heightCm,
       weightKg: values.weightKg,
       bodyFatPercent: values.bodyFatPercent,
+      userId: user.id,
     },
   });
 

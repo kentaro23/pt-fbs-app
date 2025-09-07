@@ -54,6 +54,21 @@ export async function isAuthenticated(): Promise<boolean> {
   return Boolean(c.get("session")?.value);
 }
 
+// 最小限の現在ユーザー取得（Cookieに uid: を格納している前提）
+export async function getCurrentUser(): Promise<{ id: string; email: string } | null> {
+  const c = await cookies();
+  const v = c.get("session")?.value || "";
+  if (v.startsWith("uid:")) {
+    return { id: v.slice(4), email: "" };
+  }
+  return null;
+}
+
+export async function requireUser() {
+  const u = await getCurrentUser();
+  if (!u) redirect("/auth/login");
+  return u;
+}
 // NOTE: スキーマ作成は本番で `prisma migrate deploy` もしくは `prisma db push` を実行してください。
 
 // Username(email) + password registration

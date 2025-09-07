@@ -63,6 +63,10 @@ model Athlete {
   infieldPosition  InfieldPosition?
   assessments      Assessment[]
   romTargets       RomTarget[]
+  userId           String?
+  user             User?         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model Assessment {
@@ -175,6 +179,7 @@ model User {
   records      Record[]
   assigned     Appointment[]     @relation("AppointmentAssignee")
   ownedTemplates EvaluationTemplate[] @relation("UserOwnedTemplates")
+  athletes     Athlete[]
 }
 
 // User x Clinic with role
