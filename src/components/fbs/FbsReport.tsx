@@ -2,7 +2,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { RomRadar } from "@/components/charts/RomRadar";
 import { TriangleBalance } from "@/components/charts/TriangleBalance";
 import { MetricRadar, type MetricRadarDatum } from "@/components/charts/MetricRadar";
 import { MOVEMENT_LABEL_JP } from "@/lib/constants";
@@ -34,11 +33,7 @@ export function FbsReport({ assessment, athlete, roms, targets }: { assessment: 
     return acc;
   }, {} as Record<Movement, Record<string, number>>);
 
-  const radarData = (Object.keys(MOVEMENT_LABEL_JP) as Movement[]).map((m) => {
-    const r = romMap[m]?.RIGHT ?? 0;
-    const l = romMap[m]?.LEFT ?? 0;
-    return { movement: m, right: normalizeRom(r, m), left: normalizeRom(l, m) };
-  });
+  // ROMレーダーは非表示。その他の機能は保持。
 
   const tri = scoreTriangle({ swingSpeed: assessment.swingSpeed ?? undefined, romMap });
 
@@ -94,13 +89,6 @@ export function FbsReport({ assessment, athlete, roms, targets }: { assessment: 
         <Separator className="my-2" />
 
         <section className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
-          <Card>
-            <CardHeader><CardTitle>可動域レーダー</CardTitle></CardHeader>
-            <CardContent>
-              <RomRadar data={radarData} />
-            </CardContent>
-          </Card>
-
           <Card>
             <CardHeader><CardTitle>三角チャート</CardTitle></CardHeader>
             <CardContent>
