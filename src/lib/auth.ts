@@ -54,49 +54,13 @@ export async function isAuthenticated(): Promise<boolean> {
   return Boolean(c.get("session")?.value);
 }
 
-async function ensureUserTable() {
-  try {
-    await prisma.$executeRawUnsafe(
-      'CREATE TABLE IF NOT EXISTS "User" (id TEXT PRIMARY KEY, email TEXT UNIQUE NOT NULL, name TEXT, "passwordHash" TEXT)'
-    );
-  } catch (e) {
-    try {
-      await prisma.$executeRawUnsafe(
-        'CREATE TABLE IF NOT EXISTS user (id TEXT PRIMARY KEY, email TEXT UNIQUE NOT NULL, name TEXT, "passwordHash" TEXT)'
-      );
-    } catch (_) {}
-  }
-  try {
-    await prisma.$executeRawUnsafe('CREATE UNIQUE INDEX IF NOT EXISTS "user_email_unique" ON "User" (email)');
-  } catch (_) {
-    try {
-      await prisma.$executeRawUnsafe('CREATE UNIQUE INDEX IF NOT EXISTS user_email_unique ON user (email)');
-    } catch (__){ }
-  }
-  // Verify presence
-  try {
-    const rows: Array<{ r: string | null }> = await prisma.$queryRawUnsafe(
-      "SELECT to_regclass('public.\"User\"')::text AS r"
-    );
-    const exists = rows && rows[0] && rows[0].r !== null;
-    if (!exists) {
-      throw new Error('user_table_missing');
-    }
-  } catch {
-    throw new Error('user_table_missing');
-  }
-}
+// NOTE: スキーマ作成は本番で `prisma migrate deploy` もしくは `prisma db push` を実行してください。
 
 // Username(email) + password registration
 export async function registerAction(formData: FormData) {
   try {
     if (!(process.env.DATABASE_URL || process.env.PRISMA_DATABASE_URL)) {
       redirect("/auth/register?e=noenv");
-    }
-    try {
-      await ensureUserTable();
-    } catch {
-      redirect("/auth/register?e=tb");
     }
     const email = (formData.get("email") ?? "").toString().trim();
     const name = (formData.get("name") ?? "").toString().trim();
@@ -149,7 +113,6 @@ export async function loginPasswordAction(formData: FormData) {
     if (!(process.env.DATABASE_URL || process.env.PRISMA_DATABASE_URL)) {
       redirect("/auth/login?e=noenv");
     }
-    await ensureUserTable();
     const email = (formData.get("email") ?? "").toString().trim();
     const password = (formData.get("password") ?? "").toString();
     const c = await cookies();
