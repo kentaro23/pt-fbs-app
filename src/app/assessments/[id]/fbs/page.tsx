@@ -1,4 +1,6 @@
 import { prisma } from "@/lib/db";
+import { requireUser } from "@/lib/auth";
+import { notFound } from "next/navigation";
 import { FbsReport } from "@/components/fbs/FbsReport";
 import type { Rom, Athlete as ReportAthlete, Assessment as ReportAssessment, ThrowingJp, BattingJp, Movement, Mark3 } from "@/lib/types";
 import Link from "next/link";
@@ -22,7 +24,8 @@ function toMark3(m: $Enums.Mark3 | null): Mark3 | undefined {
 
 export default async function FbsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const a = await prisma.assessment.findUnique({ where: { id }, include: { athlete: true } });
+  const user = await requireUser();
+  const a = await prisma.assessment.findFirst({ where: { id, athlete: { userId: user.id } }, include: { athlete: true } });
   if (!a) return <div className="p-6">Not found</div>;
   const rom = await prisma.rom.findMany({ where: { assessmentId: a.id } });
   const targetRows = await prisma.romTarget.findMany({ where: { athleteId: a.athlete.id } });

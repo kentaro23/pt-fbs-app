@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/db";
+import { requireUser } from "@/lib/auth";
+import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -42,8 +44,9 @@ async function updateTargetsAction(formData: FormData) {
 
 export default async function AthleteDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const athlete = await prisma.athlete.findUnique({ where: { id } });
-  if (!athlete) return <div className="p-6">Not found</div>;
+  const user = await requireUser();
+  const athlete = await prisma.athlete.findFirst({ where: { id, userId: user.id } });
+  if (!athlete) return notFound();
   const assessments = await prisma.assessment.findMany({ where: { athleteId: athlete.id }, orderBy: { date: "desc" } });
   const targets = await prisma.romTarget.findMany({ where: { athleteId: athlete.id } });
   const tMap = Object.fromEntries(targets.map(t => [t.movement, t.targetDeg])) as Partial<Record<Movement, number>>;

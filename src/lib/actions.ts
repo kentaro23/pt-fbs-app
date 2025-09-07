@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/db";
+import { requireUser } from "@/lib/auth";
 import { computeComposition } from "@/lib/calc";
 import { redirect } from "next/navigation";
 import type { AssessmentFormValues } from "@/components/forms/AssessmentForm";
@@ -9,12 +10,13 @@ import type { Prisma, $Enums } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
 export async function createAssessmentAction(values: AssessmentFormValues, athleteId?: string) {
+  const user = await requireUser();
   const { fatMassKg, leanMassKg, leanBodyIndex } = computeComposition(values.heightCm, values.weightKg, values.bodyFatPercent);
 
   if (!athleteId) {
     throw new Error("athleteId is required to create assessment");
   }
-  const athlete = await prisma.athlete.findUnique({ where: { id: athleteId } });
+  const athlete = await prisma.athlete.findFirst({ where: { id: athleteId, userId: user.id } });
   if (!athlete) {
     throw new Error("athlete not found");
   }
