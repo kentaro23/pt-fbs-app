@@ -62,9 +62,12 @@ export default async function FbsPage({ params }: { params: Promise<{ id: string
   return (
     <main className="p-4">
       <FbsReport athlete={athlete} assessment={assessment} roms={rom as Rom[]} targets={targets} />
-      <div className="mt-6 flex justify-center print:hidden">
-        <Button asChild>
+      <div className="mt-6 flex items-center justify-center gap-3 print:hidden">
+        <Button asChild className="text-black bg-black/0 border border-black hover:bg-black hover:text-white">
           <Link href="/">ホームに戻る</Link>
+        </Button>
+        <Button type="button" className="text-black bg-black/0 border border-black hover:bg-black hover:text-white" asChild>
+          <Link href="javascript:history.back()">戻る</Link>
         </Button>
       </div>
     </main>
