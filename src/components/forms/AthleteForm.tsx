@@ -140,7 +140,7 @@ export function AthleteForm({ onSubmit }: { onSubmit: (v: AthleteFormValues) => 
         </div>
       </div>
 
-      <Button type="submit" disabled={submitting}>
+      <Button type="submit" disabled={submitting} className="text-black bg-black/0 border border-black hover:bg-black hover:text-white">
         {submitting ? "保存中..." : "保存"}
       </Button>
     </form>
