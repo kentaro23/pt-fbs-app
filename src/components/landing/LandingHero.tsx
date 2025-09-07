@@ -59,7 +59,7 @@ export default function LandingHero({ authed = false }: { authed?: boolean }) {
           </Card>
         </Link>
 
-        <Link href="/assessments/new">
+        <Link href="/athletes/new">
           <Card className="group h-full border-black/10 bg-white/70 transition hover:shadow-lg backdrop-blur">
             <CardHeader className="flex flex-row items-center gap-3">
               <div className="rounded-xl bg-emerald-50 p-2 text-emerald-600"><Activity /></div>
