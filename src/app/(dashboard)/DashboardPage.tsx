@@ -117,7 +117,7 @@ export default async function DashboardPage(props?: { searchParams?: SP }) {
         <ClientRefGuard />
         <div className="flex items-center justify-between gap-3">
           <h1 className="text-2xl font-bold">選手一覧</h1>
-          <Button asChild>
+          <Button asChild className="text-black bg-black/0 border border-black hover:bg-black hover:text-white">
             <Link href="/athletes/new">新規作成</Link>
           </Button>
         </div>
@@ -208,7 +208,7 @@ export default async function DashboardPage(props?: { searchParams?: SP }) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {athletes.map(a => (
+              {athletes.map(a => (
                   <TableRow key={a.id} className="hover:bg-accent/40 odd:bg-muted/30 border-b border-black/10">
                     <TableCell className="text-left">
                       <Link href={`/athletes/${a.id}`} className="text-primary font-medium hover:underline">
@@ -265,7 +265,7 @@ export default async function DashboardPage(props?: { searchParams?: SP }) {
                 <Link href={`/?${buildQS(sp, { page: String(page + 1) })}`}>次へ</Link>
               </Button>
             </div>
-          </div>
+        </div>
         )}
       </main>
     </DashboardClient>
