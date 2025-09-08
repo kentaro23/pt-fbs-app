@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useFormStatus } from "react-dom";
 import { Button } from "@/components/ui/button";
 
 type Props = {
@@ -18,19 +18,18 @@ export function SubmitButton({
   variant,
   size,
 }: Props) {
-  const [submitting, setSubmitting] = useState(false);
+  const { pending } = useFormStatus();
   return (
     <Button
       type="submit"
-      onClick={() => setSubmitting(true)}
-      disabled={submitting}
-      aria-busy={submitting}
+      disabled={pending}
+      aria-busy={pending}
       aria-live="polite"
       variant={variant}
       size={size}
       className={className}
     >
-      {submitting ? submittingText : children}
+      {pending ? submittingText : children}
     </Button>
   );
 }

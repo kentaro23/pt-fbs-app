@@ -29,7 +29,7 @@ export default function RegisterPage() {
           {e === "noenv" && <div className="text-sm text-red-600">環境変数 DATABASE_URL / PRISMA_DATABASE_URL が未設定です。管理者に連絡してください。</div>}
           {e?.startsWith("db_") && <div className="text-sm text-red-600">登録時にエラーが発生しました（{e.replace("db_","") }）。管理者に連絡してください。</div>}
           {e === "exists" && <div className="text-sm text-red-600">このメールは既に登録されています。</div>}
-          <form action={async (fd: FormData) => { setSub(true); await registerAction(fd); }} className="space-y-3">
+          <form action={registerAction} className="space-y-3">
             <div>
               <label className="block text-sm">メールアドレス</label>
               <Input name="email" type="email" required autoComplete="email" />

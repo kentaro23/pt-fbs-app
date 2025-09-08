@@ -4,7 +4,6 @@ import { useSearchParams } from "next/navigation";
 import { loginPasswordAction } from "@/lib/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { SubmitButton } from "@/components/ui/submit-button";
 import Link from "next/link";
 import { useState } from "react";
@@ -13,7 +12,7 @@ export default function LoginPage() {
   const sp = useSearchParams();
   const e = sp.get("e");
   const registered = sp.get("registered");
-  const [sub, setSub] = useState(false);
+  const [sub] = useState(false);
   return (
     <div className="container-app max-w-md mx-auto py-8">
       <Card className="card-surface">
@@ -25,7 +24,7 @@ export default function LoginPage() {
           {e === "invalid" && <div className="text-sm text-red-600">メールまたはパスワードが違います。</div>}
           {e === "noenv" && <div className="text-sm text-red-600">環境変数 DATABASE_URL / PRISMA_DATABASE_URL が未設定です。管理者に連絡してください。</div>}
           {e === "db" && <div className="text-sm text-red-600">ログイン時にエラーが発生しました。時間をおいてお試しください。</div>}
-          <form action={async (fd: FormData) => { setSub(true); await loginPasswordAction(fd); }} className="space-y-3">
+          <form action={loginPasswordAction} className="space-y-3">
             <div>
               <label className="block text-sm">メールアドレス</label>
               <Input name="email" type="email" required autoComplete="email" />
