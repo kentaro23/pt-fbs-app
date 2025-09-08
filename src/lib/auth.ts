@@ -69,6 +69,14 @@ export async function requireUser() {
   if (!u) redirect("/auth/login");
   return u;
 }
+
+// 管理者だけに限定されたページ用のガード
+export async function requireAdmin() {
+  const u = await requireUser();
+  const dbUser = await prisma.user.findUnique({ where: { id: u.id }, select: { email: true } });
+  if (!dbUser || dbUser.email !== "kentaro20040623@gmail.com") redirect("/");
+  return { id: u.id, email: dbUser.email };
+}
 // NOTE: スキーマ作成は本番で `prisma migrate deploy` もしくは `prisma db push` を実行してください。
 
 // Username(email) + password registration
