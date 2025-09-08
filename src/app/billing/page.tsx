@@ -1,6 +1,6 @@
+import { prisma } from '@/lib/db';
 import { requireUser } from '@/lib/auth';
-import { getUserSubscription } from '@/lib/subscription';
-import { redirect } from 'next/navigation';
+import ManagePortalButton from './ManagePortalButton';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -25,33 +25,32 @@ async function postCheckout(plan: 'SOLO'|'CLINIC'|'TEAM') {
 
 export default async function BillingPage() {
   const user = await requireUser();
-  const sub = await getUserSubscription(user.id);
-
-  const plans = [
-    { plan: 'SOLO', title: 'Solo', desc: '選手15名 / 1席' },
-    { plan: 'CLINIC', title: 'Clinic', desc: '選手100名 / 1席' },
-    { plan: 'TEAM', title: 'Team', desc: '選手500名 / 1席' },
-  ] as const;
+  const sub = await prisma.subscription.findFirst({
+    where: { userId: user.id },
+    orderBy: { createdAt: 'desc' },
+    select: { plan: true, status: true },
+  });
 
   return (
-    <div className="container max-w-2xl mx-auto py-8 space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold">プランとお支払い</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          現在: <span className="font-medium">{sub.plan}</span>（{sub.status}）
+    <main className="max-w-2xl mx-auto p-6 space-y-6">
+      <h1 className="text-2xl font-bold">サブスクリプション</h1>
+      <div className="rounded-2xl border p-4 space-y-2">
+        <div>現在のプラン: <b>{sub?.plan ?? 'FREE'}</b></div>
+        <div>ステータス: <b>{sub?.status ?? 'CANCELED'}</b></div>
+      </div>
+
+      <div className="rounded-2xl border p-4 space-y-3">
+        <p className="text-sm text-muted-foreground">
+          プランの変更・支払い情報の更新・請求履歴の確認は「サブスク管理へ」から行えます。
         </p>
+        <ManagePortalButton />
+        {!process.env.STRIPE_SECRET_KEY && (
+          <p className="text-xs text-amber-600">
+            管理者向けメモ: STRIPE_SECRET_KEY が未設定のため、ポータル作成は 501 を返します。
+          </p>
+        )}
       </div>
-      <div className="grid gap-4 md:grid-cols-3">
-        {plans.map(p => (
-          <form key={p.plan} action={postCheckout.bind(null, p.plan as 'SOLO'|'CLINIC'|'TEAM')} className="rounded-xl border p-4 space-y-2">
-            <div className="font-semibold">{p.title}</div>
-            <div className="text-sm text-muted-foreground">{p.desc}</div>
-            <button type="submit" className="w-full rounded-lg border px-3 py-2">選択</button>
-          </form>
-        ))}
-      </div>
-      <p className="text-xs text-muted-foreground">Stripe未設定の場合、購入ボタンはエラー案内になります。</p>
-    </div>
+    </main>
   );
 }
 
