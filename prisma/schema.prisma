@@ -85,6 +85,7 @@ model User {
   ownedTemplates EvaluationTemplate[] @relation("UserOwnedTemplates")
   memberships    Membership[]
   records        Record[]
+  subscription   Subscription?
 }
 
 model Membership {
@@ -283,4 +284,31 @@ enum InfieldPosition {
   SECOND_BASE
   THIRD_BASE
   SHORTSTOP
+}
+
+// ===== Subscription (Plans) =====
+enum Plan {
+  FREE
+  SOLO
+  CLINIC
+  TEAM
+}
+
+enum SubscriptionStatus {
+  inactive
+  active
+  trialing
+  past_due
+  canceled
+}
+
+model Subscription {
+  id               String              @id @default(cuid())
+  userId           String              @unique
+  user             User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan             Plan                @default(FREE)
+  status           SubscriptionStatus  @default(inactive)
+  stripeCustomerId String?
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
 }
