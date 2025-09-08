@@ -1,5 +1,5 @@
 import { requireUser } from '@/lib/auth';
-import { getSubscription } from '@/lib/subscription';
+import { getUserSubscription } from '@/lib/subscription';
 import { redirect } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
@@ -25,7 +25,7 @@ async function postCheckout(plan: 'SOLO'|'CLINIC'|'TEAM') {
 
 export default async function BillingPage() {
   const user = await requireUser();
-  const sub = await getSubscription(user.id);
+  const sub = await getUserSubscription(user.id);
 
   const plans = [
     { plan: 'SOLO', title: 'Solo', desc: '選手15名 / 1席' },

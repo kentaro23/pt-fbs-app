@@ -1,6 +1,5 @@
 import { prisma } from "@/lib/db";
 import { requireUser } from "@/lib/auth";
-import { notFound } from "next/navigation";
 import { FbsReport } from "@/components/fbs/FbsReport";
 import type { Rom, Athlete as ReportAthlete, Assessment as ReportAssessment, ThrowingJp, BattingJp, Movement, Mark3 } from "@/lib/types";
 import Link from "next/link";

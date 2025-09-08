@@ -4,15 +4,12 @@ import { useSearchParams } from "next/navigation";
 import { registerAction } from "@/lib/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { SubmitButton } from "@/components/ui/submit-button";
 import Link from "next/link";
-import { useState } from "react";
 
 export default function RegisterPage() {
   const sp = useSearchParams();
   const e = sp.get("e");
-  const [sub, setSub] = useState(false);
   return (
     <div className="container-app max-w-md mx-auto py-8">
       <Card className="card-surface">

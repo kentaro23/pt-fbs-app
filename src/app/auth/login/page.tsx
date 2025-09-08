@@ -6,13 +6,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { SubmitButton } from "@/components/ui/submit-button";
 import Link from "next/link";
-import { useState } from "react";
 
 export default function LoginPage() {
   const sp = useSearchParams();
   const e = sp.get("e");
   const registered = sp.get("registered");
-  const [sub] = useState(false);
   return (
     <div className="container-app max-w-md mx-auto py-8">
       <Card className="card-surface">

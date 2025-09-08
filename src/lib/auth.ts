@@ -30,7 +30,7 @@ function classifyDbError(err: unknown): string {
   return 'unknown';
 }
 
-export async function loginAction(_formData: FormData) {
+export async function loginAction(_: FormData) {
   const c = await cookies();
   const sessionId = Math.random().toString(36).slice(2) + Date.now().toString(36);
   c.set("session", sessionId, {

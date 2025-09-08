@@ -5,7 +5,7 @@ import { Separator } from "@/components/ui/separator";
 import { TriangleBalance } from "@/components/charts/TriangleBalance";
 import { MetricRadar, type MetricRadarDatum } from "@/components/charts/MetricRadar";
 import { MOVEMENT_LABEL_JP } from "@/lib/constants";
-import { scoreTriangle, normalizeRom } from "@/lib/calc";
+import { scoreTriangle } from "@/lib/calc";
 import type { Assessment, Athlete, Rom, Movement, Mark3 } from "@/lib/types";
 
 function mark3ToScore(m?: Mark3 | null): number | undefined {
