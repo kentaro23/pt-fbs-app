@@ -84,25 +84,8 @@ export async function registerAction(formData: FormData) {
       redirect("/auth/register?e=missing");
     }
     const existing = await prisma.user.findUnique({ where: { email } });
-    if (existing) {
+    if (existing && existing.passwordHash) {
       redirect("/auth/register?e=exists");
-    }
-    // Ensure column passwordHash exists (first-run safety)
-    try {
-      const rows: Array<{ c: bigint }> = await prisma.$queryRawUnsafe(
-        "SELECT COUNT(*)::bigint AS c FROM information_schema.columns WHERE table_schema = 'public' AND (table_name = 'User' OR table_name = 'user') AND (column_name = 'passwordHash' OR column_name = 'passwordhash')"
-      );
-      const count = Number(rows?.[0]?.c || 0);
-      if (count === 0) {
-        try {
-          await prisma.$executeRawUnsafe('ALTER TABLE "User" ADD COLUMN "passwordHash" TEXT');
-        } catch (e) {
-          // try lowercase table name fallback
-          await prisma.$executeRawUnsafe('ALTER TABLE user ADD COLUMN "passwordHash" TEXT');
-        }
-      }
-    } catch {
-      redirect("/auth/register?e=col");
     }
     let passwordHash = "";
     try {
@@ -111,7 +94,11 @@ export async function registerAction(formData: FormData) {
       redirect("/auth/register?e=hash");
     }
     try {
-      await prisma.user.create({ data: { email, name, passwordHash } });
+      if (existing) {
+        await prisma.user.update({ where: { email }, data: { name, passwordHash } });
+      } else {
+        await prisma.user.create({ data: { email, name, passwordHash } });
+      }
     } catch {
       redirect("/auth/register?e=insert");
     }
