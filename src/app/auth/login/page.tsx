@@ -33,7 +33,7 @@ export default function LoginPage() {
               <label className="block text-sm">パスワード</label>
               <Input name="password" type="password" required autoComplete="current-password" />
             </div>
-            <Button type="submit" disabled={sub} className="w-full text-black bg-black/0 border border-black hover:bg-black hover:text-white">
+            <Button type="submit" disabled={sub} aria-busy={sub} aria-live="polite" className="w-full text-black bg-black/0 border border-black hover:bg-black hover:text-white">
               {sub ? "送信中..." : "ログイン"}
             </Button>
           </form>
