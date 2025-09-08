@@ -15,6 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import ClientRefGuard from "@/components/ClientRefGuard";
 import DashboardClient from "@/components/DashboardClient";
 import { deleteAthleteAction } from "@/lib/actions";
+import { getCurrentUser } from "@/lib/auth";
 import type { $Enums, Prisma } from "@prisma/client";
 
 function positionToJp(p: string): string {
@@ -44,6 +45,16 @@ export default async function DashboardPage(props?: { searchParams?: SP }) {
   const sort = pick("sort") || "createdAt_desc";
   const page = Math.max(1, Number.parseInt(pick("page") || "1", 10) || 1);
   const limit = Math.min(50, Math.max(5, Number.parseInt(pick("limit") || "10", 10) || 10));
+
+  // 管理者判定
+  let isAdmin = false;
+  try {
+    const me = await getCurrentUser();
+    if (me) {
+      const u = await prisma.user.findUnique({ where: { id: me.id }, select: { email: true } });
+      isAdmin = u?.email === "kentaro20040623@gmail.com";
+    }
+  } catch {}
 
   const normalizeAll = (v: string) => (v === "__all" ? "" : v);
   const posJp = normalizeAll(posSp);
@@ -117,9 +128,16 @@ export default async function DashboardPage(props?: { searchParams?: SP }) {
         <ClientRefGuard />
         <div className="flex items-center justify-between gap-3">
           <h1 className="text-2xl font-bold">選手一覧</h1>
-          <Button asChild className="text-black bg-black/0 border border-black hover:bg-black hover:text-white">
-            <Link href="/athletes/new">新規作成</Link>
-          </Button>
+          <div className="flex items-center gap-2">
+            {isAdmin && (
+              <Button asChild className="text-black bg-black/0 border border-black hover:bg-black hover:text-white">
+                <Link href="/admin/athletes">管理: 全選手</Link>
+              </Button>
+            )}
+            <Button asChild className="text-black bg-black/0 border border-black hover:bg-black hover:text-white">
+              <Link href="/athletes/new">新規作成</Link>
+            </Button>
+          </div>
         </div>
         <Card>
           <CardHeader className="py-3">
