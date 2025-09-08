@@ -72,8 +72,13 @@ export default async function DashboardPage(props?: { searchParams?: SP }) {
   const sideMap: Record<string, $Enums.ThrowingSide> = { "右": "RIGHT", "左": "LEFT" };
   const batMap: Record<string, $Enums.Batting> = { "右": "RIGHT", "左": "LEFT", "両": "SWITCH" };
 
+  const ownerFilter: Prisma.AthleteWhereInput = (!isAdmin && (await getCurrentUser()))
+    ? { userId: (await getCurrentUser())!.id }
+    : {};
+
   const where: Prisma.AthleteWhereInput = {
     AND: [
+      ownerFilter,
       q
         ? {
             OR: [
