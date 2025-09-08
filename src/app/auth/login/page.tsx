@@ -5,6 +5,7 @@ import { loginPasswordAction } from "@/lib/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { SubmitButton } from "@/components/ui/submit-button";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -33,9 +34,9 @@ export default function LoginPage() {
               <label className="block text-sm">パスワード</label>
               <Input name="password" type="password" required autoComplete="current-password" />
             </div>
-            <Button type="submit" disabled={sub} aria-busy={sub} aria-live="polite" className="w-full text-black bg-black/0 border border-black hover:bg-black hover:text-white">
-              {sub ? "送信中..." : "ログイン"}
-            </Button>
+            <SubmitButton submittingText="ログイン中..." className="w-full text-black bg-black/0 border border-black hover:bg-black hover:text-white">
+              ログイン
+            </SubmitButton>
           </form>
           <div className="text-sm">
             アカウントが無い方は <Link href="/auth/register" className="underline">新規登録</Link>

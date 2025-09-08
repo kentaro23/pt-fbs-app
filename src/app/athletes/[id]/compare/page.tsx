@@ -59,7 +59,7 @@ export default async function ComparePage({ params, searchParams }: { params: Pr
             {assessments.map(as => <option key={as.id} value={as.id}>{new Date(as.date).toLocaleDateString()}</option>)}
           </select>
         </div>
-        <button className="px-3 py-2 border rounded">更新</button>
+        <button className="px-3 py-2 border rounded" formMethod="GET">更新</button>
       </form>
 
       <div className="overflow-x-auto">

@@ -246,7 +246,7 @@ export function AssessmentForm({ onSubmit, defaultValues }: { onSubmit: (v: Asse
       </section>
 
       <div className="pt-4 flex justify-center">
-        <Button type="submit" disabled={submitting} className="w-full md:w-auto px-8 py-3 text-lg">
+        <Button type="submit" disabled={submitting} aria-busy={submitting} aria-live="polite" className="w-full md:w-auto px-8 py-3 text-lg">
           {submitting ? "保存中..." : "保存"}
         </Button>
       </div>

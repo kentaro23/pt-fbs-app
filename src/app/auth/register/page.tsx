@@ -5,6 +5,7 @@ import { registerAction } from "@/lib/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { SubmitButton } from "@/components/ui/submit-button";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -41,9 +42,9 @@ export default function RegisterPage() {
               <label className="block text-sm">パスワード</label>
               <Input name="password" type="password" required autoComplete="new-password" />
             </div>
-            <Button type="submit" disabled={sub} className="w-full text-black bg-black/0 border border-black hover:bg-black hover:text-white">
-              {sub ? "登録中..." : "登録"}
-            </Button>
+            <SubmitButton submittingText="登録中..." className="w-full text-black bg-black/0 border border-black hover:bg-black hover:text-white">
+              登録
+            </SubmitButton>
           </form>
           <div className="text-sm">
             既にアカウントがある方は <Link href="/auth/login" className="underline">ログイン</Link>

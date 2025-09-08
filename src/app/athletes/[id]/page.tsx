@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db";
 import { requireUser } from "@/lib/auth";
 import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { SubmitButton } from "@/components/ui/submit-button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -90,7 +91,7 @@ export default async function AthleteDetailPage({ params }: { params: Promise<{ 
               <label className="block text-sm text-muted-foreground">チーム</label>
               <Input name="team" defaultValue={athlete.team ?? ""} className="w-64" />
             </div>
-            <Button type="submit">保存</Button>
+            <SubmitButton submittingText="保存中..." className="text-black bg-black/0 border border-black hover:bg-black hover:text-white">保存</SubmitButton>
           </form>
         </CardContent>
       </Card>
@@ -109,7 +110,7 @@ export default async function AthleteDetailPage({ params }: { params: Promise<{ 
               </div>
             ))}
             <div className="col-span-full">
-              <Button type="submit">目標を保存</Button>
+              <SubmitButton submittingText="保存中..." className="text-black bg-black/0 border border-black hover:bg-black hover:text-white">目標を保存</SubmitButton>
             </div>
           </form>
         </CardContent>

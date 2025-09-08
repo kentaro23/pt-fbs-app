@@ -1,6 +1,7 @@
 import { isAuthenticated, logoutAction } from "@/lib/auth";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { SubmitButton } from "@/components/ui/submit-button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default async function DashboardGate() {
@@ -26,7 +27,7 @@ export default async function DashboardGate() {
                 <Button asChild className="min-w-32 text-black bg-black/0 border border-black hover:bg-black hover:text-white"><Link href="/athletes">選手一覧へ</Link></Button>
                 <Button asChild variant="outline" className="min-w-32 text-black border-black hover:bg-black hover:text-white"><Link href="/billing">サブスク管理へ</Link></Button>
                 <form action={logoutAction}>
-                  <Button type="submit" variant="ghost">ログアウト</Button>
+                  <SubmitButton submittingText="ログアウト中..." variant="ghost">ログアウト</SubmitButton>
                 </form>
               </div>
             </div>

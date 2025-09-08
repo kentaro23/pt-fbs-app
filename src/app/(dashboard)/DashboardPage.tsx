@@ -7,6 +7,7 @@ import Link from "next/link";
 import LandingHero from "@/components/landing/LandingHero";
 import { prisma } from "@/lib/db";
 import { Button } from "@/components/ui/button";
+import { SubmitButton } from "@/components/ui/submit-button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -195,7 +196,7 @@ export default async function DashboardPage(props?: { searchParams?: SP }) {
               </div>
               <input type="hidden" name="page" value="1" />
               <div className="md:col-span-5 flex gap-2">
-                <Button type="submit" className="text-black bg-black/0 border border-black hover:bg-black hover:text-white">適用</Button>
+                <SubmitButton submittingText="適用中..." className="text-black bg-black/0 border border-black hover:bg-black hover:text-white">適用</SubmitButton>
                 <Button type="reset" asChild variant="outline" className="text-black border-black hover:bg-black hover:text-white">
                   <Link href="/">リセット</Link>
                 </Button>
@@ -252,7 +253,7 @@ export default async function DashboardPage(props?: { searchParams?: SP }) {
                           console.error('Delete failed', e);
                         }
                       }}>
-                        <Button type="submit" variant="destructive" size="sm">削除</Button>
+                        <SubmitButton submittingText="削除中..." className="text-white bg-red-600 hover:bg-red-700" size="sm">削除</SubmitButton>
                       </form>
                     </TableCell>
                   </TableRow>

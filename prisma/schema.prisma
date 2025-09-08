@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,6 +5,201 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model Athlete {
+  id              String           @id @default(cuid())
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  name            String
+  team            String?
+  position        Position
+  throwingSide    ThrowingSide
+  batting         Batting
+  heightCm        Float
+  weightKg        Float
+  bodyFatPercent  Float
+  infieldPosition InfieldPosition?
+  userId          String?
+  assessments     Assessment[]
+  user            User?            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  romTargets      RomTarget[]
+
+  @@index([userId])
+}
+
+model Assessment {
+  id                String   @id @default(cuid())
+  athleteId         String
+  date              DateTime @default(now())
+  fatMassKg         Float
+  leanMassKg        Float
+  leanBodyIndex     Float
+  swingSpeed        Float?
+  notes             String?
+  openHipMark       Mark3?
+  bridgeMark        Mark3?
+  forwardBendMark   Mark3?
+  medicineBallThrow Float?
+  verticalJumpCm    Float?
+  tripleBroadJumpM  Float?
+  squatWeightKg     Float?
+  gripRightKg       Float?
+  gripLeftKg        Float?
+  athlete           Athlete  @relation(fields: [athleteId], references: [id])
+  roms              Rom[]
+}
+
+model Rom {
+  id           String     @id @default(cuid())
+  assessmentId String
+  movement     Movement
+  side         BodySide
+  valueDeg     Float
+  assessment   Assessment @relation(fields: [assessmentId], references: [id])
+
+  @@unique([assessmentId, movement, side])
+}
+
+model Clinic {
+  id          String               @id @default(cuid())
+  name        String
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+  sessions    Appointment[]
+  templates   EvaluationTemplate[]
+  memberships Membership[]
+  metrics     Metric[]
+  patients    Patient[]
+  records     Record[]
+  reminders   Reminder[]
+}
+
+model User {
+  id             String               @id @default(cuid())
+  email          String               @unique
+  name           String?
+  passwordHash   String?
+  assigned       Appointment[]        @relation("AppointmentAssignee")
+  athletes       Athlete[]
+  ownedTemplates EvaluationTemplate[] @relation("UserOwnedTemplates")
+  memberships    Membership[]
+  records        Record[]
+}
+
+model Membership {
+  id        String   @id @default(cuid())
+  userId    String
+  clinicId  String
+  role      Role
+  createdAt DateTime @default(now())
+  clinic    Clinic   @relation(fields: [clinicId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId, clinicId])
+}
+
+model Patient {
+  id         String        @id @default(cuid())
+  clinicId   String
+  fullName   String
+  sex        String?
+  dob        DateTime?
+  phone      String?
+  email      String?
+  allergies  String[]
+  conditions String[]
+  tags       String[]
+  consents   Json?
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+  sessions   Appointment[]
+  metrics    Metric[]
+  clinic     Clinic        @relation(fields: [clinicId], references: [id])
+  records    Record[]
+}
+
+model EvaluationTemplate {
+  id        String     @id @default(cuid())
+  clinicId  String
+  ownerId   String?
+  name      String
+  type      RecordType
+  content   Json
+  shared    Boolean    @default(true)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  clinic    Clinic     @relation(fields: [clinicId], references: [id])
+  owner     User?      @relation("UserOwnedTemplates", fields: [ownerId], references: [id])
+}
+
+model Record {
+  id        String     @id @default(cuid())
+  clinicId  String
+  patientId String
+  authorId  String?
+  type      RecordType
+  hashtags  String[]
+  content   Json
+  createdAt DateTime   @default(now())
+  author    User?      @relation(fields: [authorId], references: [id])
+  clinic    Clinic     @relation(fields: [clinicId], references: [id])
+  patient   Patient    @relation(fields: [patientId], references: [id])
+}
+
+model Metric {
+  id         String     @id @default(cuid())
+  clinicId   String
+  patientId  String
+  date       DateTime   @default(now())
+  metricType MetricType
+  label      String?
+  value      Float?
+  side       BodySide?
+  movement   Movement?
+  clinic     Clinic     @relation(fields: [clinicId], references: [id])
+  patient    Patient    @relation(fields: [patientId], references: [id])
+}
+
+model RomTarget {
+  id        String   @id @default(cuid())
+  athleteId String
+  movement  Movement
+  targetDeg Float
+  athlete   Athlete  @relation(fields: [athleteId], references: [id])
+
+  @@unique([athleteId, movement])
+}
+
+model Appointment {
+  id                String        @id @default(cuid())
+  clinicId          String
+  patientId         String
+  status            SessionStatus @default(SCHEDULED)
+  scheduledAt       DateTime
+  checkedInAt       DateTime?
+  completedAt       DateTime?
+  cancelledAt       DateTime?
+  rescheduledReason String?
+  assigneeId        String?
+  notes             String?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  assignee          User?         @relation("AppointmentAssignee", fields: [assigneeId], references: [id])
+  clinic            Clinic        @relation(fields: [clinicId], references: [id])
+  patient           Patient       @relation(fields: [patientId], references: [id])
+  reminders         Reminder[]
+}
+
+model Reminder {
+  id            String      @id @default(cuid())
+  clinicId      String
+  appointmentId String
+  channel       String
+  scheduledFor  DateTime
+  sentAt        DateTime?
+  appointment   Appointment @relation(fields: [appointmentId], references: [id])
+  clinic        Clinic      @relation(fields: [clinicId], references: [id])
 }
 
 enum Position {
@@ -48,64 +240,6 @@ enum BodySide {
   LEFT
 }
 
-model Athlete {
-  id               String        @id @default(cuid())
-  createdAt        DateTime      @default(now())
-  updatedAt        DateTime      @updatedAt
-  name             String
-  team             String?
-  position         Position
-  throwingSide     ThrowingSide
-  batting          Batting
-  heightCm         Float
-  weightKg         Float
-  bodyFatPercent   Float
-  infieldPosition  InfieldPosition?
-  assessments      Assessment[]
-  romTargets       RomTarget[]
-  userId           String?
-  user             User?         @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-}
-
-model Assessment {
-  id               String     @id @default(cuid())
-  athlete          Athlete    @relation(fields: [athleteId], references: [id])
-  athleteId        String
-  date             DateTime   @default(now())
-  fatMassKg        Float
-  leanMassKg       Float
-  leanBodyIndex    Float
-  swingSpeed       Float?
-  notes            String?
-  roms             Rom[]
-
-  // 追加のパフォーマンス指標
-  openHipMark      Mark3?
-  bridgeMark       Mark3?
-  forwardBendMark  Mark3?
-  medicineBallThrow Float?
-  verticalJumpCm    Float?
-  tripleBroadJumpM  Float?
-  squatWeightKg     Float?
-  gripRightKg       Float?
-  gripLeftKg        Float?
-}
-
-model Rom {
-  id            String     @id @default(cuid())
-  assessment    Assessment @relation(fields: [assessmentId], references: [id])
-  assessmentId  String
-  movement      Movement
-  side          BodySide
-  valueDeg      Float
-  @@unique([assessmentId, movement, side])
-}
-
-// ====== PT-FBS Core: RBAC / Tenant / Patients / Records / Sessions (Minimal) ======
-
-// Roles and types
 enum Role {
   OWNER
   ADMIN
@@ -138,171 +272,15 @@ enum MetricType {
   CUSTOM
 }
 
-// 3値評価（○/△/×）
 enum Mark3 {
   CIRCLE
   TRIANGLE
   CROSS
 }
 
-// Detailed infield positions (for baseball infield)
 enum InfieldPosition {
   FIRST_BASE
   SECOND_BASE
   THIRD_BASE
   SHORTSTOP
-}
-
-// Tenant (Clinic/Team)
-model Clinic {
-  id          String        @id @default(cuid())
-  name        String
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-
-  memberships Membership[]
-  patients    Patient[]
-  templates   EvaluationTemplate[]
-  records     Record[]
-  metrics     Metric[]
-  sessions    Appointment[]
-  reminders   Reminder[]
-}
-
-// Minimal user model for membership linkage (Auth導入前のプレースホルダ)
-model User {
-  id           String        @id @default(cuid())
-  email        String        @unique
-  name         String?
-  passwordHash String?
-  memberships  Membership[]
-  records      Record[]
-  assigned     Appointment[]     @relation("AppointmentAssignee")
-  ownedTemplates EvaluationTemplate[] @relation("UserOwnedTemplates")
-  athletes     Athlete[]
-}
-
-// User x Clinic with role
-model Membership {
-  id        String  @id @default(cuid())
-  user      User    @relation(fields: [userId], references: [id])
-  userId    String
-  clinic    Clinic  @relation(fields: [clinicId], references: [id])
-  clinicId  String
-  role      Role
-  createdAt DateTime @default(now())
-
-  @@unique([userId, clinicId])
-}
-
-// Patient with clinic isolation
-model Patient {
-  id          String   @id @default(cuid())
-  clinic      Clinic   @relation(fields: [clinicId], references: [id])
-  clinicId    String
-  fullName    String
-  sex         String?
-  dob         DateTime?
-  phone       String?
-  email       String?
-  allergies   String[]
-  conditions  String[]
-  tags        String[]
-  consents    Json?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  records     Record[]
-  metrics     Metric[]
-  sessions    Appointment[]
-}
-
-// Shared or personal templates
-model EvaluationTemplate {
-  id        String      @id @default(cuid())
-  clinic    Clinic      @relation(fields: [clinicId], references: [id])
-  clinicId  String
-  owner     User?       @relation("UserOwnedTemplates", fields: [ownerId], references: [id])
-  ownerId   String?
-  name      String
-  type      RecordType
-  content   Json
-  shared    Boolean     @default(true)
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
-}
-
-// Clinical record with hashtags & json content
-model Record {
-  id        String      @id @default(cuid())
-  clinic    Clinic      @relation(fields: [clinicId], references: [id])
-  clinicId  String
-  patient   Patient     @relation(fields: [patientId], references: [id])
-  patientId String
-  author    User?       @relation(fields: [authorId], references: [id])
-  authorId  String?
-  type      RecordType
-  hashtags  String[]
-  content   Json
-  createdAt DateTime    @default(now())
-}
-
-// Numeric metrics (VAS/NRS/ROM/MMT...)
-model Metric {
-  id         String      @id @default(cuid())
-  clinic     Clinic      @relation(fields: [clinicId], references: [id])
-  clinicId   String
-  patient    Patient     @relation(fields: [patientId], references: [id])
-  patientId  String
-  date       DateTime    @default(now())
-  metricType MetricType
-  label      String?
-  value      Float?
-  side       BodySide?
-  movement   Movement?
-}
-
-// ROM target per athlete per movement
-model RomTarget {
-  id         String    @id @default(cuid())
-  athlete    Athlete   @relation(fields: [athleteId], references: [id])
-  athleteId  String
-  movement   Movement
-  targetDeg  Float
-
-  @@unique([athleteId, movement])
-}
-
-// Session lifecycle
-model Appointment {
-  id                String        @id @default(cuid())
-  clinic            Clinic        @relation(fields: [clinicId], references: [id])
-  clinicId          String
-  patient           Patient       @relation(fields: [patientId], references: [id])
-  patientId         String
-  status            SessionStatus @default(SCHEDULED)
-  scheduledAt       DateTime
-  checkedInAt       DateTime?
-  completedAt       DateTime?
-  cancelledAt       DateTime?
-  rescheduledReason String?
-  assignee          User?         @relation("AppointmentAssignee", fields: [assigneeId], references: [id])
-  assigneeId        String?
-  notes             String?
-  createdAt         DateTime      @default(now())
-  updatedAt         DateTime      @updatedAt
-
-  reminders         Reminder[]
-}
-
-// Notification scheduling (placeholder)
-model Reminder {
-  id          String   @id @default(cuid())
-  clinic      Clinic   @relation(fields: [clinicId], references: [id])
-  clinicId    String
-  appointment Appointment  @relation(fields: [appointmentId], references: [id])
-  appointmentId   String
-  channel     String
-  scheduledFor DateTime
-  sentAt      DateTime?
 }
