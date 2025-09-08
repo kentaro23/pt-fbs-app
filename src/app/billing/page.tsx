@@ -7,22 +7,6 @@ export const revalidate = 0;
 export const runtime = 'nodejs';
 export const fetchCache = 'force-no-store';
 
-async function postCheckout(plan: 'SOLO'|'CLINIC'|'TEAM') {
-  'use server';
-  const res = await fetch('/api/stripe/checkout', {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ plan }),
-    cache: 'no-store',
-  });
-  if (!res.ok) {
-    const data = await res.json().catch(() => ({}));
-    throw new Error(data?.error ?? 'Checkoutの起動に失敗しました（Stripe未設定の可能性）。');
-  }
-  const { url } = await res.json();
-  redirect(url);
-}
-
 export default async function BillingPage() {
   const user = await requireUser();
   const sub = await prisma.subscription.findFirst({
