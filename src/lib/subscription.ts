@@ -31,9 +31,10 @@ export async function assertAthleteCreateAllowed(userId: string) {
   const cap = await maxAthletesFor(userId);
   const count = await prisma.athlete.count({ where: { userId } });
   if (count >= cap) {
-    const err: any = new Error(`現在のプランでは選手は ${cap} 名までです。プランをアップグレードしてください。`);
-    err.code = 'PLAN_LIMIT';
-    throw err;
+    const err = new Error(`現在のプランでは選手は ${cap} 名までです。プランをアップグレードしてください。`);
+    // @ts-expect-error attach code for app-level handling (string literal)
+    (err as { code?: 'PLAN_LIMIT' }).code = 'PLAN_LIMIT';
+    throw err as Error & { code?: 'PLAN_LIMIT' };
   }
 }
 

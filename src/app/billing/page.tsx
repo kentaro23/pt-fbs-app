@@ -43,7 +43,7 @@ export default async function BillingPage() {
       </div>
       <div className="grid gap-4 md:grid-cols-3">
         {plans.map(p => (
-          <form key={p.plan} action={postCheckout.bind(null, p.plan as any)} className="rounded-xl border p-4 space-y-2">
+          <form key={p.plan} action={postCheckout.bind(null, p.plan as 'SOLO'|'CLINIC'|'TEAM')} className="rounded-xl border p-4 space-y-2">
             <div className="font-semibold">{p.title}</div>
             <div className="text-sm text-muted-foreground">{p.desc}</div>
             <button type="submit" className="w-full rounded-lg border px-3 py-2">選択</button>

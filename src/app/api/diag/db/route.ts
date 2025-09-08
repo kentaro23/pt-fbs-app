@@ -21,7 +21,7 @@ function classify(err: unknown): string {
 export async function GET() {
   const hasDb = !!process.env.DATABASE_URL;
   try {
-    const r = await prisma.$queryRawUnsafe("select 1 as ok");
+    await prisma.$queryRawUnsafe("select 1 as ok");
     return NextResponse.json({ ok: true, env: { db: hasDb }, note: "値は返しません" });
   } catch (e) {
     return NextResponse.json({ ok: false, env: { db: hasDb }, cls: classify(e) }, { status: 200 });

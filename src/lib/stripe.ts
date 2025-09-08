@@ -12,7 +12,7 @@ export const hasStripe =
   !!process.env.STRIPE_WEBHOOK_SECRET;
 
 export const stripe = hasStripe
-  ? new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2024-06-20' as any })
+  ? new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2024-06-20' as unknown as Stripe.LatestApiVersion })
   : null;
 
 export function priceIdFor(plan: 'SOLO'|'CLINIC'|'TEAM') {
