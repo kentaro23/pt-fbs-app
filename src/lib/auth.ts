@@ -82,7 +82,7 @@ export async function requireAdmin() {
 // Username(email) + password registration
 export async function registerAction(formData: FormData) {
   try {
-    if (!(process.env.DATABASE_URL || process.env.PRISMA_DATABASE_URL)) {
+    if (!process.env.DATABASE_URL) {
       redirect("/auth/register?e=noenv");
     }
     const email = (formData.get("email") ?? "").toString().trim();
@@ -120,7 +120,7 @@ export async function registerAction(formData: FormData) {
 // Username(email) + password login
 export async function loginPasswordAction(formData: FormData) {
   try {
-    if (!(process.env.DATABASE_URL || process.env.PRISMA_DATABASE_URL)) {
+    if (!process.env.DATABASE_URL) {
       redirect("/auth/login?e=noenv");
     }
     const email = (formData.get("email") ?? "").toString().trim();

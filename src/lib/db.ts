@@ -1,14 +1,17 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from '@prisma/client';
 
-const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
+declare global {
+  // eslint-disable-next-line no-var
+  var prisma: PrismaClient | undefined;
+}
 
 export const prisma =
-  globalForPrisma.prisma ??
+  global.prisma ??
   new PrismaClient({
-    datasourceUrl: process.env.DATABASE_URL,
-    log: process.env.NODE_ENV === "production" ? ["error"] : ["query", "error", "warn"],
+    log: process.env.NODE_ENV === 'production' ? ['error'] : ['query', 'error', 'warn'],
   });
 
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+if (process.env.NODE_ENV !== 'production') global.prisma = prisma;
 
-
+// Prisma を使う可能性がある RSC で edge 実行されないよう保険
+export const runtime = 'nodejs';

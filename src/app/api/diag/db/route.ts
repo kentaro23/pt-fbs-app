@@ -20,12 +20,11 @@ function classify(err: unknown): string {
 
 export async function GET() {
   const hasDb = !!process.env.DATABASE_URL;
-  const hasPrismaDb = !!process.env.PRISMA_DATABASE_URL;
   try {
     const r = await prisma.$queryRawUnsafe("select 1 as ok");
-    return NextResponse.json({ ok: true, engine: process.env.PRISMA_CLIENT_ENGINE_TYPE ?? "binary", env: { db: hasDb, prismaDb: hasPrismaDb }, note: "値は返しません" });
+    return NextResponse.json({ ok: true, env: { db: hasDb }, note: "値は返しません" });
   } catch (e) {
-    return NextResponse.json({ ok: false, engine: process.env.PRISMA_CLIENT_ENGINE_TYPE ?? "binary", env: { db: hasDb, prismaDb: hasPrismaDb }, cls: classify(e) }, { status: 200 });
+    return NextResponse.json({ ok: false, env: { db: hasDb }, cls: classify(e) }, { status: 200 });
   }
 }
 
