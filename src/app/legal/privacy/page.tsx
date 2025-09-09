@@ -3,10 +3,10 @@ export const metadata = { title: 'プライバシーポリシー | FBS App' };
 export default function Privacy() {
   return (
     <>
-      <h2>プライバシーポリシー</h2>
+      <h2 className="text-2xl font-bold text-gray-900 mb-4">プライバシーポリシー</h2>
       <p>＜株式会社 Mediforma＞（以下「当社」）は、当社が提供する「FBS App」（以下「本サービス」）におけるユーザーの個人情報の取扱いについて、以下のとおりプライバシーポリシー（以下「本ポリシー」）を定めます。</p>
 
-      <h3>1. 取得する情報</h3>
+      <h3 className="mt-8 text-xl font-semibold text-gray-900 pb-1 border-b border-gray-200">1. 取得する情報</h3>
       <ul>
         <li>アカウント情報：メールアドレス、パスワード（ハッシュ化）</li>
         <li>サービス利用情報：作成した選手データ、操作ログ（品質改善のために最低限）</li>
@@ -14,14 +14,14 @@ export default function Privacy() {
         <li>技術情報：Cookie、セッションID、IPアドレス、ブラウザ情報等</li>
       </ul>
 
-      <h3>2. 利用目的</h3>
+      <h3 className="mt-8 text-xl font-semibold text-gray-900 pb-1 border-b border-gray-200">2. 利用目的</h3>
       <ul>
         <li>本サービスの提供・維持・改善、課金・請求・不正利用防止</li>
         <li>重要なお知らせ等の通知、サポート対応</li>
         <li>法令遵守および紛争対応</li>
       </ul>
 
-      <h3>3. 外部委託・第三者提供</h3>
+      <h3 className="mt-8 text-xl font-semibold text-gray-900 pb-1 border-b border-gray-200">3. 外部委託・第三者提供</h3>
       <p>当社は以下の事業者を主なデータ処理者として利用します。</p>
       <ul>
         <li>Stripe, Inc.：決済処理（カード情報の保管・課金）</li>
@@ -30,19 +30,19 @@ export default function Privacy() {
       </ul>
       <p>法令に基づく場合等を除き、本人の同意なく個人情報を第三者へ提供しません。</p>
 
-      <h3>4. Cookie 等の利用</h3>
+      <h3 className="mt-8 text-xl font-semibold text-gray-900 pb-1 border-b border-gray-200">4. Cookie 等の利用</h3>
       <p>本サービスはログイン維持のためセッション Cookie を使用します。ブラウザ設定で Cookie を無効化した場合、サービスの一部が利用できなくなることがあります。詳細は <a href="/legal/cookies">Cookieポリシー</a> をご覧ください。</p>
 
-      <h3>5. 安全管理</h3>
+      <h3 className="mt-8 text-xl font-semibold text-gray-900 pb-1 border-b border-gray-200">5. 安全管理</h3>
       <p>通信の暗号化、アクセス制御、権限管理、脆弱性対策等を講じ、個人情報の漏えい等の防止に努めます。概要は <a href="/legal/security">セキュリティ</a> を参照ください。</p>
 
-      <h3>6. 開示・訂正・削除</h3>
+      <h3 className="mt-8 text-xl font-semibold text-gray-900 pb-1 border-b border-gray-200">6. 開示・訂正・削除</h3>
       <p>個人情報の開示・訂正・削除・利用停止をご希望の場合は、本人確認のうえ合理的な範囲で対応します。お問い合わせは「8. 連絡先」まで。</p>
 
-      <h3>7. 改定</h3>
+      <h3 className="mt-8 text-xl font-semibold text-gray-900 pb-1 border-b border-gray-200">7. 改定</h3>
       <p>本ポリシーは必要に応じて改定することがあります。重要な変更は本サービス上で告知します。</p>
 
-      <h3>8. 連絡先</h3>
+      <h3 className="mt-8 text-xl font-semibold text-gray-900 pb-1 border-b border-gray-200">8. 連絡先</h3>
       <p>事業者名：株式会社 Mediforma（株式会社 メディフォーマ）<br/>
          所在地：神奈川県 相模原市<br/>
          代表者：大原 健太郎<br/>

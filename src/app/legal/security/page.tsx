@@ -3,7 +3,7 @@ export const metadata = { title: 'セキュリティ | FBS App' };
 export default function Security() {
   return (
     <>
-      <h2>セキュリティ</h2>
+      <h2 className="text-2xl font-bold text-gray-900 mb-4">セキュリティ</h2>
       <ul>
         <li>通信：TLS による暗号化</li>
         <li>決済情報：Stripe により保管・処理（当社はカード番号を保持しません）</li>
@@ -11,7 +11,7 @@ export default function Security() {
         <li>アクセス制御：最小権限、監査ログ（必要に応じ実施）</li>
         <li>脆弱性対応：依存関係の定期更新・報告受付</li>
       </ul>
-      <p>セキュリティ上の懸念や脆弱性のご報告は、＜mediforma1@gmail.com＞までお知らせください。</p>
+      <p className="mt-6">セキュリティ上の懸念や脆弱性のご報告は、mediforma1@gmail.com までお知らせください。</p>
     </>
   );
 }
