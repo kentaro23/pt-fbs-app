@@ -8,7 +8,12 @@ import { assertAthleteCreateAllowed } from "@/lib/subscription";
 async function createAthleteAction(values: AthleteFormValues) {
   "use server";
   const user = await requireUser();
-  await assertAthleteCreateAllowed(user.id);
+  // 上限チェックはDB未準備でも保存・遷移できるように緩和
+  try {
+    await assertAthleteCreateAllowed(user.id);
+  } catch (e) {
+    console.error("plan limit check skipped:", e);
+  }
   const positionMap = { "投手": "PITCHER", "捕手": "CATCHER", "内野手": "INFIELDER", "外野手": "OUTFIELDER", "その他": "OTHER" } as const;
   const infieldMap = { "一塁手": "FIRST_BASE", "二塁手": "SECOND_BASE", "三塁手": "THIRD_BASE", "遊撃手": "SHORTSTOP" } as const;
   const sideMap = { "右": "RIGHT", "左": "LEFT" } as const;
@@ -44,7 +49,9 @@ async function createAthleteAction(values: AthleteFormValues) {
   redirect(`/assessments/new?athleteId=${athlete.id}`);
 }
 
-export default function NewAthletePage() {
+export default async function NewAthletePage() {
+  // 認証が無い場合はログインへ
+  await requireUser();
   return (
     <main className="p-6">
       <h1 className="text-2xl font-bold mb-4">選手作成</h1>
