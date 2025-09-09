@@ -1,6 +1,8 @@
 import { prisma } from '@/lib/db';
 import { requireUser } from '@/lib/auth';
 import ManagePortalButton from './ManagePortalButton';
+import { STRIPE_ENABLED } from '@/lib/stripe';
+import { isProd } from '@/lib/env';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -14,6 +16,20 @@ export default async function BillingPage() {
     orderBy: { createdAt: 'desc' },
     select: { plan: true, status: true },
   });
+
+  if (!STRIPE_ENABLED) {
+    return (
+      <div className="p-6 space-y-3">
+        <h2 className="text-xl font-semibold">サブスク設定が未完了です</h2>
+        <p>以下の環境変数を設定し、再デプロイしてください（本番は必須）:</p>
+        <ul className="list-disc ml-6">
+          <li>STRIPE_SECRET_KEY</li>
+          <li>PRICE_SOLO_MONTHLY / PRICE_CLINIC_MONTHLY / PRICE_TEAM_MONTHLY</li>
+        </ul>
+        <p className="text-sm opacity-70">現在のモード: {isProd ? 'Production' : 'Preview/Dev'}</p>
+      </div>
+    );
+  }
 
   return (
     <main className="max-w-2xl mx-auto p-6 space-y-6">

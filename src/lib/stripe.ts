@@ -1,34 +1,44 @@
 import Stripe from 'stripe';
+import { getEnv, isProd } from './env';
 
 export const appUrl =
   process.env.NEXT_PUBLIC_APP_URL ??
   (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
 
-export const hasStripe =
-  !!process.env.STRIPE_SECRET_KEY &&
-  !!process.env.PRICE_SOLO_MONTHLY &&
-  !!process.env.PRICE_CLINIC_MONTHLY &&
-  !!process.env.PRICE_TEAM_MONTHLY &&
-  !!process.env.STRIPE_WEBHOOK_SECRET;
+const key = getEnv('STRIPE_SECRET_KEY', { requiredInProd: true });
+export const PRICE_SOLO = getEnv('PRICE_SOLO_MONTHLY', { requiredInProd: true });
+export const PRICE_CLINIC = getEnv('PRICE_CLINIC_MONTHLY', { requiredInProd: true });
+export const PRICE_TEAM = getEnv('PRICE_TEAM_MONTHLY', { requiredInProd: true });
 
-export const stripe = hasStripe
-  ? new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2024-06-20' as unknown as Stripe.LatestApiVersion })
+export const STRIPE_ENABLED =
+  !!key && !!PRICE_SOLO && !!PRICE_CLINIC && !!PRICE_TEAM;
+
+export const stripe = STRIPE_ENABLED
+  ? new Stripe(key, { apiVersion: '2024-06-20' as unknown as Stripe.LatestApiVersion })
   : null;
 
 export function priceIdFor(plan: 'SOLO'|'CLINIC'|'TEAM') {
   const id = {
-    SOLO: process.env.PRICE_SOLO_MONTHLY,
-    CLINIC: process.env.PRICE_CLINIC_MONTHLY,
-    TEAM: process.env.PRICE_TEAM_MONTHLY,
+    SOLO: PRICE_SOLO,
+    CLINIC: PRICE_CLINIC,
+    TEAM: PRICE_TEAM,
   }[plan];
   if (!id) throw new Error(`Price ID not set for ${plan}`);
   return id!;
 }
 
 export const planByPriceId = () => ({
-  [process.env.PRICE_SOLO_MONTHLY ?? '']: 'SOLO',
-  [process.env.PRICE_CLINIC_MONTHLY ?? '']: 'CLINIC',
-  [process.env.PRICE_TEAM_MONTHLY ?? '']: 'TEAM',
+  [PRICE_SOLO ?? '']: 'SOLO',
+  [PRICE_CLINIC ?? '']: 'CLINIC',
+  [PRICE_TEAM ?? '']: 'TEAM',
 } as Record<string, 'SOLO'|'CLINIC'|'TEAM'>);
+
+export function requireStripe() {
+  if (!stripe) {
+    const where = isProd ? 'production' : 'non-production';
+    throw Object.assign(new Error(`Stripe not configured in ${where}`), { status: 501 });
+  }
+  return stripe!;
+}
 
 
