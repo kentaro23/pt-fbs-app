@@ -27,6 +27,9 @@ export default async function BillingPage() {
           <li>PRICE_SOLO_MONTHLY / PRICE_CLINIC_MONTHLY / PRICE_TEAM_MONTHLY</li>
         </ul>
         <p className="text-sm opacity-70">現在のモード: {isProd ? 'Production' : 'Preview/Dev'}</p>
+        <div className="rounded-xl border p-4 mt-4">
+          <ManagePortalButton disabled reason="Stripe未設定のため、管理ポータルは現在利用できません。" />
+        </div>
       </div>
     );
   }
