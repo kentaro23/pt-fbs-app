@@ -60,7 +60,7 @@ export default async function AthleteDetailPage({ params }: { params: Promise<{ 
           <Button asChild className="text-black bg-black/0 border border-black hover:bg-black hover:text-white">
             <Link href={`/athletes/${athlete.id}/compare`}>比較</Link>
           </Button>
-          <Button asChild className="text-black bg-black/0 border border-black hover:bg-black hover:text-white">
+          <Button asChild variant="outline" className="text-black bg-black/0 border border-black hover:bg-black hover:text-white">
             <Link href={`/assessments/new?athleteId=${athlete.id}`}>新規Assessment</Link>
           </Button>
         </div>
