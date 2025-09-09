@@ -29,7 +29,10 @@ export async function createCheckoutSessionAction(plan: PlanKey) {
     if (!priceId) return { ok: false as const, reason: 'price-missing' };
 
     const current = await prisma.subscription.findFirst({ where: { userId: user.id }, orderBy: { createdAt: 'desc' } });
-    const customerId = await ensureStripeCustomer(user, (current as { customerId?: string | null } | null)?.customerId ?? (current as { stripeCustomerId?: string | null } | null)?.stripeCustomerId ?? null);
+    const customerId = await ensureStripeCustomer(
+      user,
+      (current as { stripeCustomerId?: string | null } | null)?.stripeCustomerId ?? null
+    );
     if (!customerId) return { ok: false as const, reason: 'customer-failed' };
 
     const session = await stripe.checkout.sessions.create({
@@ -43,9 +46,9 @@ export async function createCheckoutSessionAction(plan: PlanKey) {
     });
 
     if (!current) {
-      await prisma.subscription.create({ data: { userId: user.id, plan: 'FREE', status: 'inactive' as $Enums.SubscriptionStatus, customerId } });
-    } else if (!(current as { customerId?: string | null }).customerId) {
-      await prisma.subscription.update({ where: { id: current.id }, data: { customerId } });
+      await prisma.subscription.create({ data: { userId: user.id, plan: 'FREE', status: 'inactive' as $Enums.SubscriptionStatus, stripeCustomerId: customerId } });
+    } else if (!(current as { stripeCustomerId?: string | null }).stripeCustomerId) {
+      await prisma.subscription.update({ where: { id: current.id }, data: { stripeCustomerId: customerId } });
     }
 
     return { ok: true as const, url: session.url };
