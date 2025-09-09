@@ -1,5 +1,5 @@
-import { Plan, SubscriptionStatus } from '@prisma/client';
 import { prisma } from '@/lib/db';
+import type { Plan, Subscription } from '@prisma/client';
 
 /** 環境変数を number として読む（不正値は fallback） */
 function readIntFromEnv(key: string, fallback: number): number {
@@ -17,26 +17,30 @@ const MAX_CAPS: Record<Plan, number> = {
   [Plan.TEAM]: readIntFromEnv('MAX_ATHLETES_TEAM', 500),
 };
 
-export function getMaxAthletesForPlan(plan: Plan): number {
-  return MAX_CAPS[plan] ?? MAX_CAPS[Plan.FREE];
+export function getMaxAthletesForPlan(plan: Plan): number { return MAX_CAPS[plan] ?? MAX_CAPS.FREE; }
+
+export function limitByPlan(plan: Plan | null | undefined): number {
+  if (!plan || plan === 'FREE') return readIntFromEnv('MAX_ATHLETES_FREE', 3);
+  if (plan === 'SOLO') return readIntFromEnv('MAX_ATHLETES_SOLO', 15);
+  if (plan === 'CLINIC') return readIntFromEnv('MAX_ATHLETES_CLINIC', 100);
+  return readIntFromEnv('MAX_ATHLETES_TEAM', 500);
 }
 
-/** 現在のサブスクリプション（未契約時は FREE として扱う） */
-export async function getUserSubscription(userId: string): Promise<{ plan: Plan; status: SubscriptionStatus }> {
-  const sub = await prisma.subscription.findFirst({
-    where: { userId, status: { in: [SubscriptionStatus.active, SubscriptionStatus.trialing] } },
-    orderBy: { createdAt: 'desc' },
-    select: { plan: true, status: true },
-  });
+export function labelOf(plan: Plan | null | undefined): string {
+  if (!plan || plan === 'FREE') return 'Free';
+  if (plan === 'SOLO') return 'Solo';
+  if (plan === 'CLINIC') return 'Clinic';
+  return 'Team';
+}
 
-  if (sub) return sub;
-  return { plan: Plan.FREE, status: SubscriptionStatus.canceled };
+export async function getCurrentSubscription(userId: string): Promise<Subscription | null> {
+  return prisma.subscription.findFirst({ where: { userId }, orderBy: { createdAt: 'desc' } });
 }
 
 /** 選手作成前の上限チェック（超過時はエラー） */
 export async function assertAthleteCreateAllowed(userId: string): Promise<void> {
-  const { plan } = await getUserSubscription(userId);
-  const cap = getMaxAthletesForPlan(plan);
+  const sub = await getCurrentSubscription(userId);
+  const cap = limitByPlan((sub?.plan as Plan | undefined) ?? 'FREE');
   const count = await prisma.athlete.count({ where: { userId } });
   if (count >= cap) {
     throw new Error(`選手の上限（${cap}人）に達しています。プランのアップグレードをご検討ください。`);
