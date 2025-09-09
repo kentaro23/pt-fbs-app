@@ -11,11 +11,18 @@ export const fetchCache = 'force-no-store';
 
 export default async function BillingPage() {
   const user = await requireUser();
-  const sub = await prisma.subscription.findFirst({
-    where: { userId: user.id },
-    orderBy: { createdAt: 'desc' },
-    select: { plan: true, status: true },
-  });
+  let sub: { plan?: string | null; status?: string | null } | null = null;
+  try {
+    sub = await prisma.subscription.findFirst({
+      where: { userId: user.id },
+      orderBy: { createdAt: 'desc' },
+      select: { plan: true, status: true },
+    });
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error('[billing] prisma', e);
+    sub = null;
+  }
 
   if (!STRIPE_ENABLED) {
     return (
