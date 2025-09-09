@@ -3,6 +3,7 @@
 import { requireUser } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { getStripeSafe, ensureStripeCustomer, resolvePriceId } from '@/lib/stripe-helpers';
+import type { $Enums } from '@prisma/client';
 
 function appUrl(path: string = '') {
   const base = process.env.NEXT_PUBLIC_APP_URL ?? '';
@@ -42,7 +43,7 @@ export async function createCheckoutSessionAction(plan: PlanKey) {
     });
 
     if (!current) {
-      await prisma.subscription.create({ data: { userId: user.id, plan: 'FREE', status: 'INACTIVE', customerId } });
+      await prisma.subscription.create({ data: { userId: user.id, plan: 'FREE', status: 'inactive' as $Enums.SubscriptionStatus, customerId } });
     } else if (!(current as { customerId?: string | null }).customerId) {
       await prisma.subscription.update({ where: { id: current.id }, data: { customerId } });
     }
@@ -64,7 +65,7 @@ export async function cancelAtPeriodEndAction() {
     if (!subId) return { ok: false as const, reason: 'no-active-subscription' };
 
     await stripe.subscriptions.update(subId, { cancel_at_period_end: true });
-    await prisma.subscription.update({ where: { id: sub!.id }, data: { status: 'CANCELED' } });
+    await prisma.subscription.update({ where: { id: sub!.id }, data: { status: 'canceled' as $Enums.SubscriptionStatus } });
     return { ok: true as const };
   } catch (e) {
     console.error('[billing/cancel]', e);
@@ -82,7 +83,7 @@ export async function resumeSubscriptionAction() {
     if (!subId) return { ok: false as const, reason: 'no-active-subscription' };
 
     await stripe.subscriptions.update(subId, { cancel_at_period_end: false });
-    await prisma.subscription.update({ where: { id: sub!.id }, data: { status: 'ACTIVE' } });
+    await prisma.subscription.update({ where: { id: sub!.id }, data: { status: 'active' as $Enums.SubscriptionStatus } });
     return { ok: true as const };
   } catch (e) {
     console.error('[billing/resume]', e);
