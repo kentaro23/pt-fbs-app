@@ -9,15 +9,16 @@ function readIntFromEnv(key: string, fallback: number): number {
   return Number.isFinite(n) && n > 0 ? n : fallback;
 }
 
+type PlanKey = 'FREE' | 'SOLO' | 'CLINIC' | 'TEAM';
 /** プランごとの上限（環境変数で上書き可） */
-const MAX_CAPS: Record<Plan, number> = {
-  [Plan.FREE]: readIntFromEnv('MAX_ATHLETES_FREE', 3),
-  [Plan.SOLO]: readIntFromEnv('MAX_ATHLETES_SOLO', 15),
-  [Plan.CLINIC]: readIntFromEnv('MAX_ATHLETES_CLINIC', 100),
-  [Plan.TEAM]: readIntFromEnv('MAX_ATHLETES_TEAM', 500),
+const MAX_CAPS: Record<PlanKey, number> = {
+  FREE: readIntFromEnv('MAX_ATHLETES_FREE', 3),
+  SOLO: readIntFromEnv('MAX_ATHLETES_SOLO', 15),
+  CLINIC: readIntFromEnv('MAX_ATHLETES_CLINIC', 100),
+  TEAM: readIntFromEnv('MAX_ATHLETES_TEAM', 500),
 };
 
-export function getMaxAthletesForPlan(plan: Plan): number { return MAX_CAPS[plan] ?? MAX_CAPS.FREE; }
+export function getMaxAthletesForPlan(plan: Plan): number { return MAX_CAPS[(plan as unknown as PlanKey)] ?? MAX_CAPS.FREE; }
 
 export function limitByPlan(plan: Plan | null | undefined): number {
   if (!plan || plan === 'FREE') return readIntFromEnv('MAX_ATHLETES_FREE', 3);
