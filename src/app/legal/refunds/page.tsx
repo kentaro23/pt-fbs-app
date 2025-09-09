@@ -21,7 +21,7 @@ export default function Refunds() {
       <p>トライアルを提供する場合は、期間終了時に自動的に課金が開始されます。開始前に解約した場合、料金は発生しません。</p>
 
       <h3>4. お問い合わせ</h3>
-      <p>返金・解約に関するお問い合わせ先：＜mediforma1@gmail.com＞</p>
+      <p>返金・解約に関するお問い合わせ先：mediforma1@gmail.com</p>
     </>
   );
 }

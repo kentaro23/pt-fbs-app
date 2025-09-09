@@ -43,12 +43,12 @@ export default function Privacy() {
       <p>本ポリシーは必要に応じて改定することがあります。重要な変更は本サービス上で告知します。</p>
 
       <h3>8. 連絡先</h3>
-      <p>事業者名：＜株式会社 Mediforma （株式会社 メディフォーマ）＞<br/>
-         所在地：＜神奈川県 相模原市＞<br/>
-         代表者：＜大原 健太郎＞<br/>
-         メール：＜mediforma1@gmail.com＞</p>
+      <p>事業者名：株式会社 Mediforma（株式会社 メディフォーマ）<br/>
+         所在地：神奈川県 相模原市<br/>
+         代表者：大原 健太郎<br/>
+         メール：mediforma1@gmail.com</p>
 
-      <p className="text-sm text-gray-500 mt-6">施行日：＜2025年09月09日＞</p>
+      <p className="text-sm text-gray-500 mt-6">施行日：2025年09月09日</p>
     </>
   );
 }

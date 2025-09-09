@@ -65,6 +65,15 @@ export default function RootLayout({
         <main className="container-app py-6">
           {children}
         </main>
+        <footer className="border-t py-6 text-sm text-gray-600">
+          <div className="container-app flex flex-wrap items-center gap-3">
+            <span>法務情報:</span>
+            <Link href="/legal/privacy" className="underline">プライバシー</Link>
+            <Link href="/legal/terms" className="underline">利用規約</Link>
+            <Link href="/legal/refunds" className="underline">返金・解約</Link>
+            <Link href="/legal/tokushoho" className="underline">特商法表記</Link>
+          </div>
+        </footer>
       </body>
     </html>
   );
