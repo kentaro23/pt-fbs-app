@@ -9,7 +9,14 @@ export const fetchCache = 'force-no-store';
 
 export default async function BillingPage() {
   const user = await requireUser();
-  const sub = await getCurrentSubscription(user.id);
+  let sub = null as Awaited<ReturnType<typeof getCurrentSubscription>>;
+  try {
+    sub = await getCurrentSubscription(user.id);
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error('[billing] getCurrentSubscription failed', e);
+    sub = null;
+  }
   const plan = (sub?.plan as 'FREE'|'SOLO'|'CLINIC'|'TEAM'|undefined) ?? 'FREE';
   const status = sub?.status ?? 'INACTIVE';
   const limit = limitByPlan(plan);
