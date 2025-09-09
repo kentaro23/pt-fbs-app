@@ -23,31 +23,51 @@ export default function BillingClient({ plan, status, limit, stripeConfigured, p
 
   const onChoose = (k: 'SOLO'|'CLINIC'|'TEAM') => {
     start(async () => {
-      const res = await createCheckoutSessionAction(k);
-      if (!res.ok || !res.url) {
-        alert(`購入画面を開けません: ${res.reason ?? 'unknown'}`);
-        return;
+      try {
+        const res = await createCheckoutSessionAction(k);
+        if (!res.ok || !res.url) {
+          alert(`購入画面を開けません: ${res.reason ?? 'unknown'}`);
+          return;
+        }
+        window.location.href = res.url;
+      } catch (e) {
+        console.error('[billing/ui choose]', e);
+        alert('処理中にエラーが発生しました。時間をおいて再試行してください。');
       }
-      window.location.href = res.url;
     });
   };
   const onCancel = () => start(async () => {
-    const r = await cancelAtPeriodEndAction();
-    if (!r.ok) alert(`解約に失敗: ${r.reason ?? 'unknown'}`);
-    else window.location.reload();
+    try {
+      const r = await cancelAtPeriodEndAction();
+      if (!r.ok) alert(`解約に失敗: ${r.reason ?? 'unknown'}`);
+      else window.location.reload();
+    } catch (e) {
+      console.error('[billing/ui cancel]', e);
+      alert('処理中にエラーが発生しました。');
+    }
   });
   const onResume = () => start(async () => {
-    const r = await resumeSubscriptionAction();
-    if (!r.ok) alert(`再開に失敗: ${r.reason ?? 'unknown'}`);
-    else window.location.reload();
+    try {
+      const r = await resumeSubscriptionAction();
+      if (!r.ok) alert(`再開に失敗: ${r.reason ?? 'unknown'}`);
+      else window.location.reload();
+    } catch (e) {
+      console.error('[billing/ui resume]', e);
+      alert('処理中にエラーが発生しました。');
+    }
   });
   const onPortal = () => start(async () => {
-    const r = await createPortalSessionAction();
-    if (!r.ok || !r.url) {
-      alert(`ポータルを開けません: ${r.reason ?? 'unknown'}`);
-      return;
+    try {
+      const r = await createPortalSessionAction();
+      if (!r.ok || !r.url) {
+        alert(`ポータルを開けません: ${r.reason ?? 'unknown'}`);
+        return;
+      }
+      window.open(r.url, '_blank');
+    } catch (e) {
+      console.error('[billing/ui portal]', e);
+      alert('ポータルの起動に失敗しました。');
     }
-    window.open(r.url, '_blank');
   });
 
   return (
@@ -106,6 +126,13 @@ export default function BillingClient({ plan, status, limit, stripeConfigured, p
             ? <button onClick={onResume} disabled={pending} className="px-4 py-2 rounded-md border">解約予約を取り消す</button>
             : <button onClick={onCancel} disabled={pending} className="px-4 py-2 rounded-md border">今期末で解約する</button>
         )}
+      </div>
+      <div className="text-sm text-gray-500 mt-6">
+        <span className="mr-2">法務情報:</span>
+        <a className="underline mr-3" href="/legal/privacy">プライバシー</a>
+        <a className="underline mr-3" href="/legal/terms">利用規約</a>
+        <a className="underline mr-3" href="/legal/refunds">返金・解約</a>
+        <a className="underline" href="/legal/tokushoho">特商法表記</a>
       </div>
     </div>
   );

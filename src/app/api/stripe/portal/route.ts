@@ -35,7 +35,8 @@ export async function POST() {
       return_url: returnUrl,
     });
 
-    return NextResponse.redirect(session.url, { status: 303 });
+    // JSON返却（クライアントで window.open する）。RSCでのdigestを避ける
+    return NextResponse.json({ ok: true, url: session.url });
   } catch (e) {
     const status = (e as { status?: number })?.status ?? 500;
     const msg = e instanceof Error ? e.message : 'error';
