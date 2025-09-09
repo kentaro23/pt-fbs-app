@@ -18,7 +18,7 @@ export async function POST() {
       select: { id: true, stripeCustomerId: true },
     })) as (SubSlim & { id?: string }) | null;
 
-    let customerId: string | null = sub?.stripeCustomerId ?? (sub as SubSlim | null)?.customerId ?? null;
+    const customerId: string | null = sub?.stripeCustomerId ?? (sub as SubSlim | null)?.customerId ?? null;
 
     if (!customerId) {
       // customerId が無い場合は 404 を返す（作成はCheckoutフローで行う想定）
