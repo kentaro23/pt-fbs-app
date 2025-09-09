@@ -1,14 +1,14 @@
 import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
-import { stripe, hasStripe, planByPriceId } from '@/lib/stripe';
+import { stripe, STRIPE_ENABLED, planByPriceId } from '@/lib/stripe';
 import type Stripe from 'stripe';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 export async function POST(req: Request) {
-  if (!hasStripe) return NextResponse.json({ ok: true });
+  if (!STRIPE_ENABLED) return NextResponse.json({ ok: true });
 
   const sig = (await headers()).get('stripe-signature');
   const secret = process.env.STRIPE_WEBHOOK_SECRET!;
