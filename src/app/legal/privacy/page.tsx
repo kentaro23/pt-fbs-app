@@ -4,7 +4,7 @@ export default function Privacy() {
   return (
     <>
       <h2 className="text-2xl font-bold text-gray-900 mb-4">プライバシーポリシー</h2>
-      <p>＜株式会社 Mediforma＞（以下「当社」）は、当社が提供する「FBS App」（以下「本サービス」）におけるユーザーの個人情報の取扱いについて、以下のとおりプライバシーポリシー（以下「本ポリシー」）を定めます。</p>
+      <p>株式会社 Mediforma（以下「当社」）は、当社が提供する「FBS App」（以下「本サービス」）におけるユーザーの個人情報の取扱いについて、以下のとおりプライバシーポリシー（以下「本ポリシー」）を定めます。</p>
 
       <h3 className="mt-8 text-xl font-semibold text-gray-900 pb-1 border-b border-gray-200">1. 取得する情報</h3>
       <ul>
@@ -43,7 +43,7 @@ export default function Privacy() {
       <p>本ポリシーは必要に応じて改定することがあります。重要な変更は本サービス上で告知します。</p>
 
       <h3 className="mt-8 text-xl font-semibold text-gray-900 pb-1 border-b border-gray-200">8. 連絡先</h3>
-      <p>事業者名：株式会社 Mediforma（株式会社 メディフォーマ）<br/>
+      <p>事業者名：株式会社 Mediforma<br/>
          所在地：神奈川県 相模原市<br/>
          代表者：大原 健太郎<br/>
          メール：mediforma1@gmail.com</p>
