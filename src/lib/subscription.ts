@@ -44,8 +44,19 @@ export async function assertAthleteCreateAllowed(userId: string): Promise<void> 
   const cap = limitByPlan((sub?.plan as Plan | undefined) ?? 'FREE');
   const count = await prisma.athlete.count({ where: { userId } });
   if (count >= cap) {
-    throw new Error(`選手の上限（${cap}人）に達しています。プランのアップグレードをご検討ください。`);
+    const meta = { count, limit: cap, remaining: Math.max(0, cap - count), plan: (sub?.plan ?? 'FREE') as Plan } as const;
+    const err: any = new Error('LIMIT_EXCEEDED');
+    err.meta = meta;
+    throw err;
   }
+}
+
+export async function getAthleteUsage(userId: string) {
+  const sub = await getCurrentSubscription(userId);
+  const cap = limitByPlan((sub?.plan as Plan | undefined) ?? 'FREE');
+  const count = await prisma.athlete.count({ where: { userId } });
+  const remaining = Math.max(0, cap - count);
+  return { count, plan: (sub?.plan ?? 'FREE') as PlanKey, limit: cap, remaining };
 }
 
 
