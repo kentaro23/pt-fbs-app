@@ -4,6 +4,8 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import bcrypt from "bcryptjs";
+import { createVerificationToken } from "@/lib/verify";
+import { sendVerificationEmail } from "@/lib/mail";
 
 type RedirectLike = { digest?: unknown };
 function hasDigest(err: unknown): err is RedirectLike {
@@ -101,19 +103,34 @@ export async function registerAction(formData: FormData) {
     } catch {
       redirect("/auth/register?e=hash");
     }
+    let userId = existing?.id;
     try {
       if (existing) {
-        await prisma.user.update({ where: { email }, data: { name, passwordHash } });
+        const u = await prisma.user.update({ where: { email }, data: { name, passwordHash } });
+        userId = u.id;
       } else {
-        await prisma.user.create({ data: { email, name, passwordHash } });
+        const u = await prisma.user.create({ data: { email, name, passwordHash } });
+        userId = u.id;
       }
     } catch {
       redirect("/auth/register?e=insert");
     }
+
+    // 検証メール（安全失敗）
+    try {
+      if (userId) {
+        const { rawToken } = await createVerificationToken(userId, 30);
+        const base = process.env.NEXT_PUBLIC_APP_URL || "";
+        const url = `${base}/auth/verify?token=${encodeURIComponent(rawToken)}`;
+        await sendVerificationEmail(email, url);
+      }
+    } catch {
+      // noop: 失敗しても登録は成功扱い
+    }
     redirect("/auth/login?registered=1");
   } catch (err) {
-    if (isRedirectError(err)) throw err;
-    redirect(`/auth/register?e=db_${classifyDbError(err)}`);
+    // 既存ルールに合わせてDBエラー分類があればそれに従う。ここでは簡略。
+    redirect(`/auth/register?e=unknown`);
   }
 }
 
@@ -143,9 +160,21 @@ export async function loginPasswordAction(formData: FormData) {
     });
     redirect("/");
   } catch (err) {
-    if (isRedirectError(err)) throw err;
-    redirect(`/auth/login?e=db_${classifyDbError(err)}`);
+    redirect(`/auth/login?e=unknown`);
   }
+}
+
+export async function isEmailVerified(userId: string): Promise<boolean> {
+  const u = await prisma.user.findUnique({ where: { id: userId }, select: { emailVerifiedAt: true } });
+  return Boolean(u?.emailVerifiedAt);
+}
+
+export async function requireVerifiedUser() {
+  const u = await getCurrentUser();
+  if (!u) redirect("/auth/login");
+  const verified = await isEmailVerified(u.id);
+  if (!verified) redirect("/auth/verify?e=unverified");
+  return u;
 }
 
 

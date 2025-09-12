@@ -8,6 +8,8 @@ import type { AssessmentFormValues } from "@/components/forms/AssessmentForm";
 import type { Movement } from "@/lib/types";
 import type { Prisma, $Enums } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+import { createVerificationToken } from "@/lib/verify";
+import { sendVerificationEmail } from "@/lib/mail";
 
 export async function createAssessmentAction(values: AssessmentFormValues, athleteId?: string) {
   const user = await requireUser();
