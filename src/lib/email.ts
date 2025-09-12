@@ -16,8 +16,8 @@ export async function sendMail({ to, subject, html }: SendArgs) {
     return { ok: true } as const;
   }
   const res = await resend.emails.send({ from: MAIL_FROM, to, subject, html });
-  if ((res as any)?.error) {
-    console.error((res as any).error);
+  if (res && typeof res === "object" && "error" in res && (res as { error?: unknown }).error) {
+    console.error((res as { error?: unknown }).error);
     throw new Error("メール送信に失敗しました");
   }
   return { ok: true } as const;

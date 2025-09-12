@@ -30,7 +30,7 @@ export async function sendVerificationEmail(to: string, url: string): Promise<vo
   }
   const from = MAIL_FROM;
   const res = await resend.emails.send({ from, to, subject, html });
-  if ((res as any)?.error) {
-    console.warn("[mail] resend error (safe-fail):", (res as any).error);
+  if (res && typeof res === "object" && "error" in res && (res as { error?: unknown }).error) {
+    console.warn("[mail] resend error (safe-fail):", (res as { error?: unknown }).error);
   }
 }

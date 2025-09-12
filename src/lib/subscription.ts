@@ -45,9 +45,8 @@ export async function assertAthleteCreateAllowed(userId: string): Promise<void> 
   const count = await prisma.athlete.count({ where: { userId } });
   if (count >= cap) {
     const meta = { count, limit: cap, remaining: Math.max(0, cap - count), plan: (sub?.plan ?? 'FREE') as Plan } as const;
-    const err: any = new Error('LIMIT_EXCEEDED');
-    err.meta = meta;
-    throw err;
+    const e = new LimitExceededError(meta);
+    throw e;
   }
 }
 
@@ -57,6 +56,14 @@ export async function getAthleteUsage(userId: string) {
   const count = await prisma.athlete.count({ where: { userId } });
   const remaining = Math.max(0, cap - count);
   return { count, plan: (sub?.plan ?? 'FREE') as PlanKey, limit: cap, remaining };
+}
+
+export class LimitExceededError extends Error {
+  readonly meta: { count: number; limit: number; remaining: number; plan: Plan };
+  constructor(meta: { count: number; limit: number; remaining: number; plan: Plan }) {
+    super('LIMIT_EXCEEDED');
+    this.meta = meta;
+  }
 }
 
 
