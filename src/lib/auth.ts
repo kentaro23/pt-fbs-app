@@ -130,8 +130,7 @@ export async function registerAction(formData: FormData) {
     redirect("/auth/login?registered=1");
   } catch (err) {
     if (isRedirectError(err)) throw err;
-    // 既存ルールに合わせてDBエラー分類があればそれに従う。ここでは簡略。
-    redirect(`/auth/register?e=unknown`);
+    redirect(`/auth/register?e=db_${classifyDbError(err)}`);
   }
 }
 
@@ -162,7 +161,7 @@ export async function loginPasswordAction(formData: FormData) {
     redirect("/");
   } catch (err) {
     if (isRedirectError(err)) throw err;
-    redirect(`/auth/login?e=unknown`);
+    redirect(`/auth/login?e=db_${classifyDbError(err)}`);
   }
 }
 
