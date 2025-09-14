@@ -1,6 +1,12 @@
 import type { NextConfig } from "next";
+// Sentry wrapper: optional import
+let withSentry: ((cfg: NextConfig) => NextConfig) | null = null;
+try {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  withSentry = require("@sentry/nextjs").withSentry as (cfg: NextConfig) => NextConfig;
+} catch {}
 
-const nextConfig: NextConfig = {
+let baseConfig: NextConfig = {
   /* config options here */
   images: {
     unoptimized: true,
@@ -24,5 +30,8 @@ const nextConfig: NextConfig = {
     ];
   },
 };
+const nextConfig: NextConfig = (withSentry && process.env.SENTRY_DSN)
+  ? withSentry(baseConfig)
+  : baseConfig;
 
 export default nextConfig;

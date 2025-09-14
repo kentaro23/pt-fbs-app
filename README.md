@@ -62,6 +62,33 @@ npm run build
 vercel --prod
 ```
 
+## 運用チェックリスト（安定化パック）
+
+- /api/health の確認
+  - 返却: `{ ok:true, db:"ok|ng", stripe:"ok|ng", email:"ok|ng", version }`
+  - DB: Prismaで `athlete.count()` が成功すれば ok
+  - Stripe: 環境変数 `STRIPE_SECRET_KEY` が設定されていれば ok
+  - Email: `RESEND_API_KEY` が設定されていれば ok
+
+- Sentry 監視
+  - 環境変数 `SENTRY_DSN` を設定すると自動で有効化
+  - クライアント/サーバの初期化は `src/sentry.client.ts` / `src/sentry.server.ts`
+  - 例外送信: `captureExceptionSafe(error, { where: 'api/auth/login' })`
+
+- レート制限
+  - 10分5回/キー(IP+種別)
+  - 実装: `src/lib/rateLimit.ts`
+  - 超過時は HTTP 429 と `retryAfterSec` を返す
+
+- www リダイレクト
+  - `pt-fbs.com` へのアクセスは `www.pt-fbs.com` へ 301（API/静的は除外）
+  - 実装: `src/middleware.ts`
+
+- FREE 上限のAPI側検証
+  - 選手作成時に `assertAthleteCreateAllowed` でサーバ側で再検証
+  - 超過時は 402 / `PLAN_LIMIT_EXCEEDED` を返す（フロントはアップグレード導線表示）
+
+
 ### その他のプラットフォーム
 - Netlify
 - AWS Amplify

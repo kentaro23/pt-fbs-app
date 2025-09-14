@@ -6,6 +6,8 @@ import { prisma } from "@/lib/db";
 import bcrypt from "bcryptjs";
 import { createVerificationToken } from "@/lib/verify";
 import { sendVerificationEmail } from "@/lib/mail";
+import { captureExceptionSafe } from "@/lib/monitoring";
+import { getClientIp, rateLimitCheck } from "@/lib/rateLimit";
 
 type RedirectLike = { digest?: unknown };
 function hasDigest(err: unknown): err is RedirectLike {
@@ -104,6 +106,15 @@ export async function requireAdmin() {
 // Username(email) + password registration
 export async function registerAction(formData: FormData) {
   try {
+    // rate limit (per IP)
+    try {
+      const h = await headers();
+      const ip = getClientIp(h);
+      const rl = rateLimitCheck(ip, 'register');
+      if (!rl.ok) {
+        redirect(`/auth/register?e=ratelimit&retry=${rl.retryAfterSec}`);
+      }
+    } catch {}
     if (!process.env.DATABASE_URL) {
       redirect("/auth/register?e=noenv");
     }
@@ -149,6 +160,7 @@ export async function registerAction(formData: FormData) {
     }
     redirect("/auth/login?registered=1");
   } catch (err) {
+    captureExceptionSafe(err, { where: 'auth/registerAction' });
     if (isRedirectError(err)) throw err;
     redirect(`/auth/register?e=db_${classifyDbError(err)}`);
   }
@@ -157,6 +169,15 @@ export async function registerAction(formData: FormData) {
 // Username(email) + password login
 export async function loginPasswordAction(formData: FormData) {
   try {
+    // rate limit (per IP)
+    try {
+      const h = await headers();
+      const ip = getClientIp(h);
+      const rl = rateLimitCheck(ip, 'login');
+      if (!rl.ok) {
+        redirect(`/auth/login?e=ratelimit&retry=${rl.retryAfterSec}`);
+      }
+    } catch {}
     if (!process.env.DATABASE_URL) {
       redirect("/auth/login?e=noenv");
     }
@@ -182,6 +203,7 @@ export async function loginPasswordAction(formData: FormData) {
     });
     redirect("/");
   } catch (err) {
+    captureExceptionSafe(err, { where: 'auth/loginPasswordAction' });
     if (isRedirectError(err)) throw err;
     redirect(`/auth/login?e=db_${classifyDbError(err)}`);
   }
