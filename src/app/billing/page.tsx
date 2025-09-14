@@ -22,7 +22,7 @@ export default async function BillingPage() {
   const limit = limitByPlan(plan);
   
   // 現在の選手使用状況を取得
-  let usage = { count: 0, plan: 'FREE' as const, limit: 3, remaining: 3 };
+  let usage: { count: number; plan: string; limit: number; remaining: number } = { count: 0, plan: 'FREE', limit: 3, remaining: 3 };
   try {
     usage = await getAthleteUsage(user.id);
   } catch (e) {
