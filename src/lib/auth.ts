@@ -32,9 +32,10 @@ function classifyDbError(err: unknown): string {
   return 'unknown';
 }
 
-function determineCookieDomain(): string | undefined {
+async function determineCookieDomain(): Promise<string | undefined> {
   try {
-    const host = (headers().get("host") || "").toLowerCase();
+    const h = await headers();
+    const host = (h.get("host") || "").toLowerCase();
     if (host.endsWith(".pt-fbs.com")) return ".pt-fbs.com";
   } catch {}
   return undefined;
@@ -43,7 +44,7 @@ function determineCookieDomain(): string | undefined {
 export async function loginAction(_: FormData) {
   const c = await cookies();
   const sessionId = Math.random().toString(36).slice(2) + Date.now().toString(36);
-  const domain = determineCookieDomain();
+  const domain = await determineCookieDomain();
   c.set("session", sessionId, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
@@ -57,7 +58,7 @@ export async function loginAction(_: FormData) {
 
 export async function logoutAction() {
   const c = await cookies();
-  const domain = determineCookieDomain();
+  const domain = await determineCookieDomain();
   // 明示的に失効させる（ドメイン付きにも対応）
   c.set("session", "", {
     httpOnly: true,
@@ -170,7 +171,7 @@ export async function loginPasswordAction(formData: FormData) {
     if (!ok) {
       redirect("/auth/login?e=invalid");
     }
-    const domain = determineCookieDomain();
+    const domain = await determineCookieDomain();
     c.set("session", `uid:${user.id}` , {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
