@@ -55,6 +55,38 @@ export type Assessment = {
   squatWeightKg?: number | null;
   gripRightKg?: number | null;
   gripLeftKg?: number | null;
+  // Power
+  verticalJumpBothCm?: number | null;
+  verticalJumpRightCm?: number | null;
+  verticalJumpLeftCm?: number | null;
+  medicineBallThrowBackM?: number | null;
+  benchPressKg?: number | null;
+  sprint10mSec?: number | null;
+  sprint30mSec?: number | null;
+  ballVelocityKmh?: number | null;
+  // Strength (左右)
+  strength2ndErRight?: number | null;
+  strength2ndErLeft?: number | null;
+  strength2ndIrRight?: number | null;
+  strength2ndIrLeft?: number | null;
+  strengthBellyPressRight?: number | null;
+  strengthBellyPressLeft?: number | null;
+  strengthSerratusAnteriorRight?: number | null;
+  strengthSerratusAnteriorLeft?: number | null;
+  strengthLowerTrapeziusRight?: number | null;
+  strengthLowerTrapeziusLeft?: number | null;
+  strengthHipFlexionRight?: number | null;
+  strengthHipFlexionLeft?: number | null;
+  strengthHipExtensionRight?: number | null;
+  strengthHipExtensionLeft?: number | null;
+  strengthHipAbductionRight?: number | null;
+  strengthHipAbductionLeft?: number | null;
+  strengthHipAdductionRight?: number | null;
+  strengthHipAdductionLeft?: number | null;
+  strengthHipErRight?: number | null;
+  strengthHipErLeft?: number | null;
+  strengthHipIrRight?: number | null;
+  strengthHipIrLeft?: number | null;
 };
 
 export type Rom = {

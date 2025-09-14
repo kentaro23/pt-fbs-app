@@ -46,6 +46,39 @@ model Assessment {
   squatWeightKg     Float?
   gripRightKg       Float?
   gripLeftKg        Float?
+  // Power metrics (追加)
+  verticalJumpBothCm Float?
+  verticalJumpRightCm Float?
+  verticalJumpLeftCm  Float?
+  medicineBallThrowBackM Float?
+  benchPressKg       Float?
+  sprint10mSec       Float?
+  sprint30mSec       Float?
+  ballVelocityKmh    Float?
+
+  // Strength metrics (左右) (追加)
+  strength2ndErRight Float?
+  strength2ndErLeft  Float?
+  strength2ndIrRight Float?
+  strength2ndIrLeft  Float?
+  strengthBellyPressRight Float?
+  strengthBellyPressLeft  Float?
+  strengthSerratusAnteriorRight Float?
+  strengthSerratusAnteriorLeft  Float?
+  strengthLowerTrapeziusRight Float?
+  strengthLowerTrapeziusLeft  Float?
+  strengthHipFlexionRight  Float?
+  strengthHipFlexionLeft   Float?
+  strengthHipExtensionRight Float?
+  strengthHipExtensionLeft  Float?
+  strengthHipAbductionRight Float?
+  strengthHipAbductionLeft  Float?
+  strengthHipAdductionRight Float?
+  strengthHipAdductionLeft  Float?
+  strengthHipErRight Float?
+  strengthHipErLeft  Float?
+  strengthHipIrRight Float?
+  strengthHipIrLeft  Float?
   athlete           Athlete  @relation(fields: [athleteId], references: [id])
   roms              Rom[]
 }

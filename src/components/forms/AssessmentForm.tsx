@@ -44,6 +44,38 @@ const schema = z.object({
   squatWeightKg: z.coerce.number().optional().nullable(),
   gripRightKg: z.coerce.number().optional().nullable(),
   gripLeftKg: z.coerce.number().optional().nullable(),
+  // Power
+  verticalJumpBothCm: z.coerce.number().optional().nullable(),
+  verticalJumpRightCm: z.coerce.number().optional().nullable(),
+  verticalJumpLeftCm: z.coerce.number().optional().nullable(),
+  medicineBallThrowBackM: z.coerce.number().optional().nullable(),
+  benchPressKg: z.coerce.number().optional().nullable(),
+  sprint10mSec: z.coerce.number().optional().nullable(),
+  sprint30mSec: z.coerce.number().optional().nullable(),
+  ballVelocityKmh: z.coerce.number().optional().nullable(),
+  // Strength (左右)
+  strength2ndErRight: z.coerce.number().optional().nullable(),
+  strength2ndErLeft: z.coerce.number().optional().nullable(),
+  strength2ndIrRight: z.coerce.number().optional().nullable(),
+  strength2ndIrLeft: z.coerce.number().optional().nullable(),
+  strengthBellyPressRight: z.coerce.number().optional().nullable(),
+  strengthBellyPressLeft: z.coerce.number().optional().nullable(),
+  strengthSerratusAnteriorRight: z.coerce.number().optional().nullable(),
+  strengthSerratusAnteriorLeft: z.coerce.number().optional().nullable(),
+  strengthLowerTrapeziusRight: z.coerce.number().optional().nullable(),
+  strengthLowerTrapeziusLeft: z.coerce.number().optional().nullable(),
+  strengthHipFlexionRight: z.coerce.number().optional().nullable(),
+  strengthHipFlexionLeft: z.coerce.number().optional().nullable(),
+  strengthHipExtensionRight: z.coerce.number().optional().nullable(),
+  strengthHipExtensionLeft: z.coerce.number().optional().nullable(),
+  strengthHipAbductionRight: z.coerce.number().optional().nullable(),
+  strengthHipAbductionLeft: z.coerce.number().optional().nullable(),
+  strengthHipAdductionRight: z.coerce.number().optional().nullable(),
+  strengthHipAdductionLeft: z.coerce.number().optional().nullable(),
+  strengthHipErRight: z.coerce.number().optional().nullable(),
+  strengthHipErLeft: z.coerce.number().optional().nullable(),
+  strengthHipIrRight: z.coerce.number().optional().nullable(),
+  strengthHipIrLeft: z.coerce.number().optional().nullable(),
 });
 
 export type AssessmentFormValues = z.infer<typeof schema>;
@@ -179,6 +211,104 @@ export function AssessmentForm({ onSubmit, defaultValues }: { onSubmit: (v: Asse
               ))}
             </TableBody>
           </Table>
+        </div>
+      </section>
+
+      <section>
+        <h2 className="text-lg font-semibold mb-2">筋力（左右）</h2>
+        <div className="overflow-x-auto mobile-table">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="min-w-[160px]">種目</TableHead>
+                <TableHead className="min-w-[100px]">右</TableHead>
+                <TableHead className="min-w-[100px]">左</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {[
+                { keyR: "strength2ndErRight", keyL: "strength2ndErLeft", label: "2nd外旋" },
+                { keyR: "strength2ndIrRight", keyL: "strength2ndIrLeft", label: "2nd内旋" },
+                { keyR: "strengthBellyPressRight", keyL: "strengthBellyPressLeft", label: "Belly press" },
+                { keyR: "strengthSerratusAnteriorRight", keyL: "strengthSerratusAnteriorLeft", label: "前鋸筋" },
+                { keyR: "strengthLowerTrapeziusRight", keyL: "strengthLowerTrapeziusLeft", label: "僧帽筋下部" },
+                { keyR: "strengthHipFlexionRight", keyL: "strengthHipFlexionLeft", label: "股関節屈曲" },
+                { keyR: "strengthHipExtensionRight", keyL: "strengthHipExtensionLeft", label: "股関節伸展" },
+                { keyR: "strengthHipAbductionRight", keyL: "strengthHipAbductionLeft", label: "股関節外転" },
+                { keyR: "strengthHipAdductionRight", keyL: "strengthHipAdductionLeft", label: "股関節内転" },
+                { keyR: "strengthHipErRight", keyL: "strengthHipErLeft", label: "股関節外旋" },
+                { keyR: "strengthHipIrRight", keyL: "strengthHipIrLeft", label: "股関節内旋" },
+              ].map((row) => (
+                <TableRow key={row.label}>
+                  <TableCell className="whitespace-nowrap font-medium">{row.label}</TableCell>
+                  <TableCell>
+                    <Input type="number" step="0.1" className="w-full text-center" {...form.register(row.keyR as any, { valueAsNumber: true })} />
+                  </TableCell>
+                  <TableCell>
+                    <Input type="number" step="0.1" className="w-full text-center" {...form.register(row.keyL as any, { valueAsNumber: true })} />
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      </section>
+
+      <section>
+        <h2 className="text-lg font-semibold mb-2">パワー</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <Label htmlFor="gripRightKg">握力 右 (kg)</Label>
+            <Input id="gripRightKg" type="number" step="0.1" className="w-full" {...form.register("gripRightKg", { valueAsNumber: true })} />
+          </div>
+          <div>
+            <Label htmlFor="gripLeftKg">握力 左 (kg)</Label>
+            <Input id="gripLeftKg" type="number" step="0.1" className="w-full" {...form.register("gripLeftKg", { valueAsNumber: true })} />
+          </div>
+
+          <div>
+            <Label htmlFor="verticalJumpBothCm">ジャンプ 両 (cm)</Label>
+            <Input id="verticalJumpBothCm" type="number" step="1" className="w-full" {...form.register("verticalJumpBothCm", { valueAsNumber: true })} />
+          </div>
+          <div>
+            <Label htmlFor="verticalJumpRightCm">ジャンプ 右 (cm)</Label>
+            <Input id="verticalJumpRightCm" type="number" step="1" className="w-full" {...form.register("verticalJumpRightCm", { valueAsNumber: true })} />
+          </div>
+          <div>
+            <Label htmlFor="verticalJumpLeftCm">ジャンプ 左 (cm)</Label>
+            <Input id="verticalJumpLeftCm" type="number" step="1" className="w-full" {...form.register("verticalJumpLeftCm", { valueAsNumber: true })} />
+          </div>
+
+          <div>
+            <Label htmlFor="medicineBallThrowBackM">5kg MB投げ 後方 (m)</Label>
+            <Input id="medicineBallThrowBackM" type="number" step="0.1" className="w-full" {...form.register("medicineBallThrowBackM", { valueAsNumber: true })} />
+          </div>
+          <div>
+            <Label htmlFor="squatWeightKg">スクワット (kg)</Label>
+            <Input id="squatWeightKg" type="number" step="1" className="w-full" {...form.register("squatWeightKg", { valueAsNumber: true })} />
+          </div>
+          <div>
+            <Label htmlFor="benchPressKg">ベンチプレス (kg)</Label>
+            <Input id="benchPressKg" type="number" step="1" className="w-full" {...form.register("benchPressKg", { valueAsNumber: true })} />
+          </div>
+
+          <div>
+            <Label htmlFor="sprint10mSec">30m走 10m時点 (秒)</Label>
+            <Input id="sprint10mSec" type="number" step="0.01" className="w-full" {...form.register("sprint10mSec", { valueAsNumber: true })} />
+          </div>
+          <div>
+            <Label htmlFor="sprint30mSec">30m走 30m時点 (秒)</Label>
+            <Input id="sprint30mSec" type="number" step="0.01" className="w-full" {...form.register("sprint30mSec", { valueAsNumber: true })} />
+          </div>
+
+          <div>
+            <Label htmlFor="ballVelocityKmh">球速 (km/h)</Label>
+            <Input id="ballVelocityKmh" type="number" step="0.1" className="w-full" {...form.register("ballVelocityKmh", { valueAsNumber: true })} />
+          </div>
+          <div>
+            <Label htmlFor="swingSpeed">スイングスピード</Label>
+            <Input id="swingSpeed" type="number" step="0.1" className="w-full" {...form.register("swingSpeed", { valueAsNumber: true })} />
+          </div>
         </div>
       </section>
 

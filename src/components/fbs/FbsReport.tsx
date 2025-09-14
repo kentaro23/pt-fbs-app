@@ -185,6 +185,77 @@ export function FbsReport({ assessment, athlete, roms, targets }: { assessment: 
           </Card>
         </section>
 
+        {/* 追加: パワー */}
+        <section className="mt-3">
+          <Card>
+            <CardHeader><CardTitle>パワー</CardTitle></CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {[
+                  { label: "握力(右)", value: assessment.gripRightKg, unit: "kg" },
+                  { label: "握力(左)", value: assessment.gripLeftKg, unit: "kg" },
+                  { label: "ジャンプ(両)", value: assessment.verticalJumpBothCm, unit: "cm" },
+                  { label: "ジャンプ(右)", value: assessment.verticalJumpRightCm, unit: "cm" },
+                  { label: "ジャンプ(左)", value: assessment.verticalJumpLeftCm, unit: "cm" },
+                  { label: "5kgMB投げ 後方", value: assessment.medicineBallThrowBackM, unit: "m" },
+                  { label: "スクワット", value: assessment.squatWeightKg, unit: "kg" },
+                  { label: "ベンチプレス", value: assessment.benchPressKg, unit: "kg" },
+                  { label: "30m走(10m)", value: assessment.sprint10mSec, unit: "s" },
+                  { label: "30m走(30m)", value: assessment.sprint30mSec, unit: "s" },
+                  { label: "球速", value: assessment.ballVelocityKmh, unit: "km/h" },
+                  { label: "スイングスピード", value: assessment.swingSpeed, unit: "" },
+                ].map((r) => (
+                  <div key={r.label} className="space-y-1">
+                    <div className="text-sm text-muted-foreground">{r.label}</div>
+                    <div className="text-lg font-semibold">{typeof r.value === 'number' ? `${r.value}${r.unit ? ` ${r.unit}` : ''}` : '-'}</div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </section>
+
+        {/* 追加: 筋力（左右） */}
+        <section className="mt-3">
+          <Card>
+            <CardHeader><CardTitle>筋力（左右）</CardTitle></CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm border border-black">
+                  <thead>
+                    <tr className="bg-slate-50">
+                      <th className="border border-black px-2 py-1 text-left">種目</th>
+                      <th className="border border-black px-2 py-1">右</th>
+                      <th className="border border-black px-2 py-1">左</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[
+                      { label: "2nd外旋", r: assessment.strength2ndErRight, l: assessment.strength2ndErLeft },
+                      { label: "2nd内旋", r: assessment.strength2ndIrRight, l: assessment.strength2ndIrLeft },
+                      { label: "Belly press", r: assessment.strengthBellyPressRight, l: assessment.strengthBellyPressLeft },
+                      { label: "前鋸筋", r: assessment.strengthSerratusAnteriorRight, l: assessment.strengthSerratusAnteriorLeft },
+                      { label: "僧帽筋下部", r: assessment.strengthLowerTrapeziusRight, l: assessment.strengthLowerTrapeziusLeft },
+                      { label: "股関節屈曲", r: assessment.strengthHipFlexionRight, l: assessment.strengthHipFlexionLeft },
+                      { label: "股関節伸展", r: assessment.strengthHipExtensionRight, l: assessment.strengthHipExtensionLeft },
+                      { label: "股関節外転", r: assessment.strengthHipAbductionRight, l: assessment.strengthHipAbductionLeft },
+                      { label: "股関節内転", r: assessment.strengthHipAdductionRight, l: assessment.strengthHipAdductionLeft },
+                      { label: "股関節外旋", r: assessment.strengthHipErRight, l: assessment.strengthHipErLeft },
+                      { label: "股関節内旋", r: assessment.strengthHipIrRight, l: assessment.strengthHipIrLeft },
+                    ].map((row) => (
+                      <tr key={row.label}>
+                        <td className="border border-black px-2 py-1 text-left whitespace-nowrap">{row.label}</td>
+                        <td className="border border-black px-2 py-1 text-center">{typeof row.r === 'number' ? row.r : '-'}</td>
+                        <td className="border border-black px-2 py-1 text-center">{typeof row.l === 'number' ? row.l : '-'}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
+        </section>
+
         <section className="mt-3">
           <Card>
             <CardHeader><CardTitle>スイングスピード関連 指標</CardTitle></CardHeader>
