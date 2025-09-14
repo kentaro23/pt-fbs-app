@@ -73,7 +73,7 @@ export function FbsReport({ assessment, athlete, roms, targets }: { assessment: 
           <div className="flex items-start justify-between">
             <div>
               <h1 className="text-2xl font-bold">FBS Report</h1>
-              <div className="text-sm text-muted-foreground">測定日: {new Date(assessment.date).toLocaleDateString()}</div>
+              <div className="text-sm text-muted-foreground">記録日: {new Date(assessment.date).toLocaleDateString()}</div>
             </div>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm">

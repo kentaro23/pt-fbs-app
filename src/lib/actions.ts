@@ -26,7 +26,7 @@ export async function createAssessmentAction(values: AssessmentFormValues, athle
   const assessment = await prisma.assessment.create({
     data: {
       athleteId: athlete.id,
-      date: new Date(),
+      date: new Date(values.measurementDate),
       fatMassKg,
       leanMassKg,
       leanBodyIndex,

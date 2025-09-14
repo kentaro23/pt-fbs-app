@@ -24,6 +24,9 @@ const schema = z.object({
   team: z.string().optional(),
   position: z.enum(["投手", "捕手", "内野手", "外野手", "その他"]).optional(),
 
+  // 測定日
+  measurementDate: z.string().min(1, "測定日を選択してください"),
+
   throwingSide: z.enum(["右", "左"]),
   batting: z.enum(["右", "左", "両"]),
   heightCm: z.coerce.number().min(120).max(220),
@@ -53,29 +56,29 @@ const schema = z.object({
   sprint10mSec: z.coerce.number().optional().nullable(),
   sprint30mSec: z.coerce.number().optional().nullable(),
   ballVelocityKmh: z.coerce.number().optional().nullable(),
-  // Strength (左右)
-  strength2ndErRight: z.coerce.number().optional().nullable(),
-  strength2ndErLeft: z.coerce.number().optional().nullable(),
-  strength2ndIrRight: z.coerce.number().optional().nullable(),
-  strength2ndIrLeft: z.coerce.number().optional().nullable(),
-  strengthBellyPressRight: z.coerce.number().optional().nullable(),
-  strengthBellyPressLeft: z.coerce.number().optional().nullable(),
-  strengthSerratusAnteriorRight: z.coerce.number().optional().nullable(),
-  strengthSerratusAnteriorLeft: z.coerce.number().optional().nullable(),
-  strengthLowerTrapeziusRight: z.coerce.number().optional().nullable(),
-  strengthLowerTrapeziusLeft: z.coerce.number().optional().nullable(),
-  strengthHipFlexionRight: z.coerce.number().optional().nullable(),
-  strengthHipFlexionLeft: z.coerce.number().optional().nullable(),
-  strengthHipExtensionRight: z.coerce.number().optional().nullable(),
-  strengthHipExtensionLeft: z.coerce.number().optional().nullable(),
-  strengthHipAbductionRight: z.coerce.number().optional().nullable(),
-  strengthHipAbductionLeft: z.coerce.number().optional().nullable(),
-  strengthHipAdductionRight: z.coerce.number().optional().nullable(),
-  strengthHipAdductionLeft: z.coerce.number().optional().nullable(),
-  strengthHipErRight: z.coerce.number().optional().nullable(),
-  strengthHipErLeft: z.coerce.number().optional().nullable(),
-  strengthHipIrRight: z.coerce.number().optional().nullable(),
-  strengthHipIrLeft: z.coerce.number().optional().nullable(),
+  // Strength (左右) - 0-5の6段階評価
+  strength2ndErRight: z.coerce.number().min(0).max(5).optional().nullable(),
+  strength2ndErLeft: z.coerce.number().min(0).max(5).optional().nullable(),
+  strength2ndIrRight: z.coerce.number().min(0).max(5).optional().nullable(),
+  strength2ndIrLeft: z.coerce.number().min(0).max(5).optional().nullable(),
+  strengthBellyPressRight: z.coerce.number().min(0).max(5).optional().nullable(),
+  strengthBellyPressLeft: z.coerce.number().min(0).max(5).optional().nullable(),
+  strengthSerratusAnteriorRight: z.coerce.number().min(0).max(5).optional().nullable(),
+  strengthSerratusAnteriorLeft: z.coerce.number().min(0).max(5).optional().nullable(),
+  strengthLowerTrapeziusRight: z.coerce.number().min(0).max(5).optional().nullable(),
+  strengthLowerTrapeziusLeft: z.coerce.number().min(0).max(5).optional().nullable(),
+  strengthHipFlexionRight: z.coerce.number().min(0).max(5).optional().nullable(),
+  strengthHipFlexionLeft: z.coerce.number().min(0).max(5).optional().nullable(),
+  strengthHipExtensionRight: z.coerce.number().min(0).max(5).optional().nullable(),
+  strengthHipExtensionLeft: z.coerce.number().min(0).max(5).optional().nullable(),
+  strengthHipAbductionRight: z.coerce.number().min(0).max(5).optional().nullable(),
+  strengthHipAbductionLeft: z.coerce.number().min(0).max(5).optional().nullable(),
+  strengthHipAdductionRight: z.coerce.number().min(0).max(5).optional().nullable(),
+  strengthHipAdductionLeft: z.coerce.number().min(0).max(5).optional().nullable(),
+  strengthHipErRight: z.coerce.number().min(0).max(5).optional().nullable(),
+  strengthHipErLeft: z.coerce.number().min(0).max(5).optional().nullable(),
+  strengthHipIrRight: z.coerce.number().min(0).max(5).optional().nullable(),
+  strengthHipIrLeft: z.coerce.number().min(0).max(5).optional().nullable(),
 });
 
 export type AssessmentFormValues = z.infer<typeof schema>;
@@ -84,6 +87,7 @@ export function AssessmentForm({ onSubmit, defaultValues }: { onSubmit: (v: Asse
   const form = useForm<AssessmentFormValues>({
     resolver: zodResolver(schema) as unknown as Resolver<AssessmentFormValues>,
     defaultValues: {
+      measurementDate: new Date().toISOString().split('T')[0], // 今日の日付をデフォルト
       throwingSide: "右",
       batting: "右",
       rom: Object.fromEntries(movements.map(m => [m, { RIGHT: undefined, LEFT: undefined }])) as AssessmentFormValues["rom"],
@@ -110,6 +114,15 @@ export function AssessmentForm({ onSubmit, defaultValues }: { onSubmit: (v: Asse
       <section className="space-y-4">
         <h2 className="text-lg font-semibold">基本情報</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <Label htmlFor="measurementDate">測定日</Label>
+            <Input 
+              id="measurementDate" 
+              type="date" 
+              className="w-full" 
+              {...form.register("measurementDate")} 
+            />
+          </div>
           <div>
             <Label>投球側</Label>
             <Select defaultValue={form.getValues("throwingSide")} onValueChange={(v: ThrowingJp) => form.setValue("throwingSide", v)}>
@@ -242,10 +255,26 @@ export function AssessmentForm({ onSubmit, defaultValues }: { onSubmit: (v: Asse
                 <TableRow key={row.label}>
                   <TableCell className="whitespace-nowrap font-medium">{row.label}</TableCell>
                   <TableCell>
-                    <Input type="number" step="0.1" className="w-full text-center" {...form.register(row.keyR as keyof AssessmentFormValues, { valueAsNumber: true })} />
+                    <Input 
+                      type="number" 
+                      step="1" 
+                      min="0" 
+                      max="5" 
+                      placeholder="0-5" 
+                      className="w-full text-center" 
+                      {...form.register(row.keyR as keyof AssessmentFormValues, { valueAsNumber: true })} 
+                    />
                   </TableCell>
                   <TableCell>
-                    <Input type="number" step="0.1" className="w-full text-center" {...form.register(row.keyL as keyof AssessmentFormValues, { valueAsNumber: true })} />
+                    <Input 
+                      type="number" 
+                      step="1" 
+                      min="0" 
+                      max="5" 
+                      placeholder="0-5" 
+                      className="w-full text-center" 
+                      {...form.register(row.keyL as keyof AssessmentFormValues, { valueAsNumber: true })} 
+                    />
                   </TableCell>
                 </TableRow>
               ))}
