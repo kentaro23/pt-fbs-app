@@ -1,5 +1,5 @@
 import { requireUser } from '@/lib/auth';
-import { getCurrentSubscription, limitByPlan } from '@/lib/subscription';
+import { getCurrentSubscription, limitByPlan, getAthleteUsage } from '@/lib/subscription';
 import BillingClient from './ui/BillingClient';
 
 export const dynamic = 'force-dynamic';
@@ -20,6 +20,16 @@ export default async function BillingPage() {
   const plan = (sub?.plan as 'FREE'|'SOLO'|'CLINIC'|'TEAM'|undefined) ?? 'FREE';
   const status = sub?.status ?? 'INACTIVE';
   const limit = limitByPlan(plan);
+  
+  // 現在の選手使用状況を取得
+  let usage = { count: 0, plan: 'FREE' as const, limit: 3, remaining: 3 };
+  try {
+    usage = await getAthleteUsage(user.id);
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error('[billing] getAthleteUsage failed', e);
+  }
+  
   const stripeConfigured = Boolean(process.env.STRIPE_SECRET_KEY);
   const priceVars = {
     SOLO: process.env.PRICE_SOLO_MONTHLY,
@@ -32,6 +42,7 @@ export default async function BillingPage() {
       plan={plan}
       status={status}
       limit={limit}
+      usage={usage}
       stripeConfigured={stripeConfigured}
       priceVars={priceVars}
     />
