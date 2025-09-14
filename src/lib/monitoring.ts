@@ -2,17 +2,17 @@
   Sentry wrapper. Safe no-op when SENTRY_DSN or dependency is missing.
 */
 
-let sentryLoaded = false;
+let initialized = false;
 let captureFn: ((e: unknown, ctx?: Record<string, unknown>) => void) | null = null;
+let initPromise: Promise<void> | null = null;
 
-function loadSentry() {
-  if (sentryLoaded) return;
-  sentryLoaded = true;
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const Sentry = require('@sentry/nextjs');
-    if (process.env.SENTRY_DSN) {
-      // Initialize only once; if user also initializes elsewhere, this is idempotent enough
+function initSentry(): Promise<void> {
+  if (initialized) return Promise.resolve();
+  if (initPromise) return initPromise;
+  initPromise = (async () => {
+    try {
+      if (!process.env.SENTRY_DSN) return; // disabled
+      const Sentry = await import('@sentry/nextjs');
       try {
         Sentry.init({
           dsn: process.env.SENTRY_DSN,
@@ -26,17 +26,21 @@ function loadSentry() {
           Sentry.captureException(e);
         } catch {}
       };
-      return;
+      initialized = true;
+    } catch {
+      captureFn = null;
     }
-  } catch {}
-  captureFn = null;
+  })();
+  return initPromise;
 }
 
 export function captureExceptionSafe(e: unknown, ctx?: Record<string, unknown>) {
-  if (!captureFn) loadSentry();
-  try {
-    captureFn?.(e, ctx);
-  } catch {}
+  // Fire-and-forget init, then attempt to capture
+  initSentry().then(() => {
+    try {
+      captureFn?.(e, ctx);
+    } catch {}
+  });
 }
 
 
