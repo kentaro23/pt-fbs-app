@@ -242,10 +242,10 @@ export function AssessmentForm({ onSubmit, defaultValues }: { onSubmit: (v: Asse
                 <TableRow key={row.label}>
                   <TableCell className="whitespace-nowrap font-medium">{row.label}</TableCell>
                   <TableCell>
-                    <Input type="number" step="0.1" className="w-full text-center" {...form.register(row.keyR as any, { valueAsNumber: true })} />
+                    <Input type="number" step="0.1" className="w-full text-center" {...form.register(row.keyR as keyof AssessmentFormValues, { valueAsNumber: true })} />
                   </TableCell>
                   <TableCell>
-                    <Input type="number" step="0.1" className="w-full text-center" {...form.register(row.keyL as any, { valueAsNumber: true })} />
+                    <Input type="number" step="0.1" className="w-full text-center" {...form.register(row.keyL as keyof AssessmentFormValues, { valueAsNumber: true })} />
                   </TableCell>
                 </TableRow>
               ))}
