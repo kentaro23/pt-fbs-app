@@ -1,6 +1,6 @@
 "use server";
 
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import bcrypt from "bcryptjs";
@@ -32,14 +32,24 @@ function classifyDbError(err: unknown): string {
   return 'unknown';
 }
 
+function determineCookieDomain(): string | undefined {
+  try {
+    const host = (headers().get("host") || "").toLowerCase();
+    if (host.endsWith(".pt-fbs.com")) return ".pt-fbs.com";
+  } catch {}
+  return undefined;
+}
+
 export async function loginAction(_: FormData) {
   const c = await cookies();
   const sessionId = Math.random().toString(36).slice(2) + Date.now().toString(36);
+  const domain = determineCookieDomain();
   c.set("session", sessionId, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     path: "/",
+    ...(domain ? { domain } : {}),
     maxAge: 60 * 60 * 24 * 7, // 7 days
   });
   redirect("/");
@@ -47,7 +57,16 @@ export async function loginAction(_: FormData) {
 
 export async function logoutAction() {
   const c = await cookies();
-  c.delete("session");
+  const domain = determineCookieDomain();
+  // 明示的に失効させる（ドメイン付きにも対応）
+  c.set("session", "", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    ...(domain ? { domain } : {}),
+    maxAge: 0,
+  });
   redirect("/");
 }
 
@@ -151,11 +170,13 @@ export async function loginPasswordAction(formData: FormData) {
     if (!ok) {
       redirect("/auth/login?e=invalid");
     }
+    const domain = determineCookieDomain();
     c.set("session", `uid:${user.id}` , {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
+      ...(domain ? { domain } : {}),
       maxAge: 60 * 60 * 24 * 7,
     });
     redirect("/");
