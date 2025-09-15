@@ -14,8 +14,8 @@ type PlanKey = 'FREE' | 'SOLO' | 'CLINIC' | 'TEAM';
 const MAX_CAPS: Record<PlanKey, number> = {
   FREE: readIntFromEnv('MAX_ATHLETES_FREE', 3),
   SOLO: readIntFromEnv('MAX_ATHLETES_SOLO', 15),
-  CLINIC: readIntFromEnv('MAX_ATHLETES_CLINIC', 100),
-  TEAM: readIntFromEnv('MAX_ATHLETES_TEAM', 500),
+  CLINIC: readIntFromEnv('MAX_ATHLETES_CLINIC', 50),
+  TEAM: readIntFromEnv('MAX_ATHLETES_TEAM', 100),
 };
 
 export function getMaxAthletesForPlan(plan: Plan): number { return MAX_CAPS[(plan as unknown as PlanKey)] ?? MAX_CAPS.FREE; }
@@ -23,8 +23,8 @@ export function getMaxAthletesForPlan(plan: Plan): number { return MAX_CAPS[(pla
 export function limitByPlan(plan: Plan | null | undefined): number {
   if (!plan || plan === 'FREE') return readIntFromEnv('MAX_ATHLETES_FREE', 3);
   if (plan === 'SOLO') return readIntFromEnv('MAX_ATHLETES_SOLO', 15);
-  if (plan === 'CLINIC') return readIntFromEnv('MAX_ATHLETES_CLINIC', 100);
-  return readIntFromEnv('MAX_ATHLETES_TEAM', 500);
+  if (plan === 'CLINIC') return readIntFromEnv('MAX_ATHLETES_CLINIC', 50);
+  return readIntFromEnv('MAX_ATHLETES_TEAM', 100);
 }
 
 export function labelOf(plan: Plan | null | undefined): string {

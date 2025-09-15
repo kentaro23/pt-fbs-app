@@ -15,8 +15,8 @@ type Props = {
 const tiers: Array<{ key: 'FREE'|'SOLO'|'CLINIC'|'TEAM'; name: string; desc: string; features: string[] }> = [
   { key: 'FREE', name: 'Free', desc: 'まずは無料でお試し', features: ['選手上限: 3', '基本機能'] },
   { key: 'SOLO', name: 'Solo', desc: '個人トレーナー向け', features: ['選手上限: 15（変更可）', '優先サポート(軽)'] },
-  { key: 'CLINIC', name: 'Clinic', desc: '整骨院・治療院向け', features: ['選手上限: 100（変更可）', 'メールサポート'] },
-  { key: 'TEAM', name: 'Team', desc: '部活・チーム向け', features: ['選手上限: 500（変更可）', 'チーム運用に最適'] },
+  { key: 'CLINIC', name: 'Clinic', desc: '整骨院・治療院向け', features: ['選手上限: 50（変更可）', 'メールサポート'] },
+  { key: 'TEAM', name: 'Team', desc: '部活・チーム向け', features: ['選手上限: 100（変更可）', 'チーム運用に最適'] },
 ];
 
 export default function BillingClient({ plan, status, limit, usage, stripeConfigured, priceVars }: Props) {
