@@ -140,6 +140,11 @@ export default async function DashboardPage(props?: { searchParams?: SP }) {
                 <Link href="/admin/athletes">管理: 全選手</Link>
               </Button>
             )}
+            {isAdmin && (
+              <Button asChild className="text-black bg-black/0 border border-black hover:bg-black hover:text-white">
+                <Link href="/admin/subscriptions">管理: サブスクリプション</Link>
+              </Button>
+            )}
             <Button asChild className="text-black bg-black/0 border border-black hover:bg-black hover:text-white">
               <Link href="/athletes/new">新規作成</Link>
             </Button>
